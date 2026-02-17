@@ -1,4 +1,6 @@
 using CarMaintenanceTracker.Api.Data;
+using CarMaintenanceTracker.Api.Repositories;
+using CarMaintenanceTracker.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,12 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+// Register repositories
+builder.Services.AddScoped<IMaintenanceTemplateRepository, MaintenanceTemplateRepository>();
+
+// Register services
+builder.Services.AddScoped<IMaintenanceTemplateService, MaintenanceTemplateService>();
 
 // Configure CORS for frontend communication
 builder.Services.AddCors(options =>

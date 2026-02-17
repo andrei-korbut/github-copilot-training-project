@@ -4,6 +4,8 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarMaintenanceTracker.Api", "CarMaintenanceTracker.Api\CarMaintenanceTracker.Api.csproj", "{4D322AA8-6D62-32D2-B56D-994FF6CFD957}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarMaintenanceTracker.Api.Tests", "CarMaintenanceTracker.Api.Tests\CarMaintenanceTracker.Api.Tests.csproj", "{8E5A92B1-7F34-42E8-9C60-1D8E4A6F2B9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +16,10 @@ Global
 		{4D322AA8-6D62-32D2-B56D-994FF6CFD957}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D322AA8-6D62-32D2-B56D-994FF6CFD957}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D322AA8-6D62-32D2-B56D-994FF6CFD957}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E5A92B1-7F34-42E8-9C60-1D8E4A6F2B9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E5A92B1-7F34-42E8-9C60-1D8E4A6F2B9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E5A92B1-7F34-42E8-9C60-1D8E4A6F2B9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E5A92B1-7F34-42E8-9C60-1D8E4A6F2B9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

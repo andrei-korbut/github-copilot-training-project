@@ -1,6 +1,55 @@
-@CarMaintenanceTracker.Api_HostAddress = http://localhost:5030
+@CarMaintenanceTracker.Api_HostAddress = http://localhost:5000
 
-GET {{CarMaintenanceTracker.Api_HostAddress}}/weatherforecast/
+### Health Check
+GET {{CarMaintenanceTracker.Api_HostAddress}}/health
 Accept: application/json
+
+###
+
+### Create Maintenance Template - Oil Change (km-based)
+POST {{CarMaintenanceTracker.Api_HostAddress}}/api/setup
+Content-Type: application/json
+
+{
+  "name": "Oil Change",
+  "intervalType": "km",
+  "intervalValue": 10000
+}
+
+###
+
+### Create Maintenance Template - Air Filter (time-based)
+POST {{CarMaintenanceTracker.Api_HostAddress}}/api/setup
+Content-Type: application/json
+
+{
+  "name": "Air Filter",
+  "intervalType": "time",
+  "intervalValue": 365
+}
+
+###
+
+### Create Maintenance Template - Validation Error (missing name)
+POST {{CarMaintenanceTracker.Api_HostAddress}}/api/setup
+Content-Type: application/json
+
+{
+  "name": "",
+  "intervalType": "km",
+  "intervalValue": 10000
+}
+
+###
+
+### Create Maintenance Template - Validation Error (invalid interval type)
+POST {{CarMaintenanceTracker.Api_HostAddress}}/api/setup
+Content-Type: application/json
+
+{
+  "name": "Test Template",
+  "intervalType": "invalid",
+  "intervalValue": 10000
+}
 
 ###

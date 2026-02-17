@@ -23,3 +23,16 @@ When a task is completed:
 ### Infrastructure
 - ✅ **01 – Backend, Database & Docker Setup** (Completed: February 18, 2026)
 - ✅ **02 – Frontend & Docker Setup** (Completed: February 18, 2026)
+
+### Backend
+- ✅ **02 – POST Create Maintenance Template** (Completed: February 18, 2026)
+  - Created MaintenanceTemplate entity with all required properties
+  - Implemented 3-layer architecture (Controller → Service → Repository)
+  - Added validation for required fields and interval type ("km" or "time")
+  - Returns 201 Created with Location header
+  - Created and applied EF Core migration
+  - Tested successfully in docker-compose environment
+  - **Unit Tests:** 21 tests implemented and passing (3 Repository + 8 Service + 10 Controller)
+    - Test project: `CarMaintenanceTracker.Api.Tests` using xUnit and Moq
+    - All tests follow Arrange-Act-Assert pattern
+    - Code coverage report generated
