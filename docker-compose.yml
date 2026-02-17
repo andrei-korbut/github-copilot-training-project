@@ -1,0 +1,44 @@
+services:
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: maintenance-tracker-db
+    environment:
+      - SA_PASSWORD=${SA_PASSWORD}
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "${SA_PASSWORD}" -Q "SELECT 1" -C || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    networks:
+      - maintenance-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: maintenance-tracker-backend
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=database;Database=MaintenanceAppDB;User=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+    ports:
+      - "5000:80"
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - maintenance-network
+
+volumes:
+  mssql-data:
+    name: maintenance-tracker-mssql-data
+
+networks:
+  maintenance-network:
+    driver: bridge

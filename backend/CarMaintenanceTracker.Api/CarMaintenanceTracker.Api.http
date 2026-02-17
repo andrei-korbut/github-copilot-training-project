@@ -1,0 +1,6 @@
+@CarMaintenanceTracker.Api_HostAddress = http://localhost:5030
+
+GET {{CarMaintenanceTracker.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

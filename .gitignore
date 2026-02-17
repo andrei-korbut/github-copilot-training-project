@@ -1,0 +1,53 @@
+# Environment variables
+.env
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+
+# Rider
+.idea/
+
+# Docker
+docker-compose.override.yml
+
+# Node modules (for frontend)
+node_modules/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+
+# Entity Framework
+*.mdf
+*.ldf
+
+# SQL Server files
+*.mdf
+*.ldf
+
+# Logs
+logs/
+*.log
