@@ -45,6 +45,8 @@ This task must implement:
 - SetupController with GET endpoint
 - MaintenanceTemplateDto
 
+**Note:** This task uses the MaintenanceTemplate entity created in Task 02.
+
 Must follow:
 - 3-layer architecture (Controller → Service → Repository)
 - Repository pattern with interfaces
@@ -87,7 +89,7 @@ Task<List<MaintenanceTemplateDto>> GetAllTemplatesAsync()
 
 ## 🔗 Dependencies
 
-None – This task should create the MaintenanceTemplate entity and initial repository/service infrastructure as needed.
+**Backend Task 02 (POST Create Maintenance Template)** – This task depends on the MaintenanceTemplate entity being created by Task 02. Task 02 must be completed first to establish the entity model, and this task will implement the GET endpoint using that existing entity.
 
 ---
 
