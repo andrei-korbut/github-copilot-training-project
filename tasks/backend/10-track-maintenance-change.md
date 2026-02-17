@@ -73,6 +73,7 @@ Task<TrackChangeDto> TrackChangeAsync(int carMaintenanceItemId, CreateTrackChang
 
 - carMaintenanceItemId must be valid integer
 - CarMaintenanceItem with id must exist → 404
+- CarMaintenanceItem must reference a non-archived MaintenanceTemplate → 400 Bad Request with error: "Cannot track changes for archived maintenance templates"
 - If intervalType = "km": km is required
 - If intervalType = "time": date is required
 - km must be >= 0 (if provided)
@@ -84,9 +85,10 @@ Task<TrackChangeDto> TrackChangeAsync(int carMaintenanceItemId, CreateTrackChang
 
 ## 🔗 Dependencies
 
-- 07 – POST Create Car (needs CarMaintenanceItem entity)
+- 02 – POST Create Maintenance Template
+- 07 – POST Create Car
 
-Note: This task should create the TrackChange entity.
+Note: This task creates the TrackChange entity.
 
 ---
 

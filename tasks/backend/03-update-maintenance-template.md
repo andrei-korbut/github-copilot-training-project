@@ -78,7 +78,6 @@ Task<MaintenanceTemplateDto?> UpdateTemplateAsync(int id, UpdateMaintenanceTempl
 
 ## 🔗 Dependencies
 
-- 01 – GET Maintenance Templates
 - 02 – POST Create Maintenance Template
 
 ---

@@ -61,8 +61,7 @@ Task<bool> ArchiveTemplateAsync(int id)
 
 ## 🔗 Dependencies
 
-- 01 – GET Maintenance Templates
-- 03 – PUT Update Maintenance Template
+- 02 – POST Create Maintenance Template
 
 ---
 

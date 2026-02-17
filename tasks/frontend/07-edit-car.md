@@ -17,6 +17,8 @@ Depends on:
 - /frontend/05-display-cars-list
 - /frontend/06-add-car
 
+**Note:** The cars list page from task 05 can be mocked with a simple placeholder for testing the redirect after editing. Check if tasks 05 or 06 have already created this mock page to avoid duplication.
+
 ---
 
 ## 🧱 Scope of Work

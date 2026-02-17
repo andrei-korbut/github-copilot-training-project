@@ -14,6 +14,8 @@ Depends on:
 - /backend/02-create-maintenance-template
 - /frontend/01-display-maintenance-templates
 
+**Note:** The templates list page from task 01 can be mocked with a simple placeholder for testing the redirect after creation. Check if task 01 or any other task has already created this mock page to avoid duplication.
+
 ---
 
 ## 🧱 Scope of Work

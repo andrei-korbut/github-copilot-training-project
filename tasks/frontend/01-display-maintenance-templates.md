@@ -79,3 +79,7 @@ Depends on:
 - Loading state tested
 - Error state tested
 - Archived templates display correctly
+
+---
+
+**Note:** This task should render Edit, Archive, and Restore buttons for each template as part of the UI layout, but these buttons can be non-functional placeholders until their respective features are implemented in tasks 03 and 04.

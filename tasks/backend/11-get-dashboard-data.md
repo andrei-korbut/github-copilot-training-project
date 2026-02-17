@@ -109,7 +109,7 @@ Task<DashboardDto?> GetDashboardDataAsync(int carId)
 
 ## 🔗 Dependencies
 
-- 06 – GET Cars List
+- 02 – POST Create Maintenance Template
 - 07 – POST Create Car
 
 ---

@@ -60,7 +60,7 @@ Task<bool> RestoreTemplateAsync(int id)
 
 ## 🔗 Dependencies
 
-- 01 – GET Maintenance Templates
+- 02 – POST Create Maintenance Template
 - 04 – PUT Archive Maintenance Template
 
 ---

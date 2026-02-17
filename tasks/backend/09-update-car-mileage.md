@@ -68,7 +68,6 @@ Task<bool> UpdateCarMileageAsync(int id, int currentKm)
 
 ## 🔗 Dependencies
 
-- 06 – GET Cars List
 - 07 – POST Create Car
 
 ---

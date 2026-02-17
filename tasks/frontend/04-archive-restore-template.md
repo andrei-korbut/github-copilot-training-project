@@ -14,7 +14,6 @@ PUT /api/setup/{id}/restore
 Depends on:
 - /backend/04-archive-maintenance-template
 - /backend/05-restore-maintenance-template
-- /frontend/01-display-maintenance-templates
 
 ---
 

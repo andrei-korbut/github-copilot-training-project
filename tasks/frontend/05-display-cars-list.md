@@ -87,3 +87,7 @@ Depends on:
 - Error state tested
 - Navigation tested (Add Car, Edit)
 - Mileage formatting tested
+
+---
+
+**Note:** This task should render Edit and View Details buttons for each car as part of the UI layout, but these buttons can be non-functional placeholders until their respective features are implemented in tasks 07 and 08.

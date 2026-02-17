@@ -91,7 +91,6 @@ Task<CarDto?> UpdateCarAsync(int id, UpdateCarDto dto)
 
 ## 🔗 Dependencies
 
-- 06 – GET Cars List
 - 07 – POST Create Car
 
 ---

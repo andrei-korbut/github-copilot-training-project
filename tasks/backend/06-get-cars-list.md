@@ -89,7 +89,7 @@ Task<List<CarDto>> GetAllCarsAsync()
 
 ## 🔗 Dependencies
 
-- 01 – GET Maintenance Templates (needs MaintenanceTemplate entity)
+- 02 – POST Create Maintenance Template (Car entity references MaintenanceTemplate)
 
 Note: This task should create the Car and CarMaintenanceItem entities.
 
