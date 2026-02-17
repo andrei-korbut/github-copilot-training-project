@@ -97,7 +97,28 @@ Task<DashboardDto?> GetDashboardDataAsync(int carId)
 
 ---
 
-## 🔐 Validation Rules
+## � Entity Model
+
+**Car:**
+- `id` (int, PK) – Unique car ID
+- `name` (string, required)
+- `currentKm` (int, required)
+- `createdAt` (datetime, auto-set)
+
+**CarMaintenanceItem:**
+- `id` (int, PK) – Unique maintenance item ID
+- `carId` (int, FK → Car)
+- `maintenanceTemplateId` (int, FK → MaintenanceTemplate)
+- `lastServiceKm` (int, optional)
+- `lastServiceDate` (datetime, optional)
+- `intervalValue` (int, required) – copied from template
+- `intervalType` (`km` / `time`)
+- `calculatedNextKm` (int, backend-calculated)
+- `calculatedNextDate` (datetime, backend-calculated)
+
+---
+
+## �🔐 Validation Rules
 
 - carId must be valid integer
 - Car with id must exist → 404

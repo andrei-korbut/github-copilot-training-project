@@ -76,7 +76,28 @@ Task<CarDto> CreateCarAsync(CreateCarDto dto)
 
 ---
 
-## 🔐 Validation Rules
+## � Entity Model
+
+**Car:**
+- `id` (int, PK) – Unique car ID
+- `name` (string, required)
+- `currentKm` (int, required)
+- `createdAt` (datetime, auto-set)
+
+**CarMaintenanceItem:**
+- `id` (int, PK) – Unique maintenance item ID
+- `carId` (int, FK → Car)
+- `maintenanceTemplateId` (int, FK → MaintenanceTemplate)
+- `lastServiceKm` (int, optional)
+- `lastServiceDate` (datetime, optional)
+- `intervalValue` (int, required) – copied from template
+- `intervalType` (`km` / `time`)
+- `calculatedNextKm` (int, backend-calculated)
+- `calculatedNextDate` (datetime, backend-calculated)
+
+---
+
+## �🔐 Validation Rules
 
 - Name is required → "Name is obligatory field"
 - CurrentKm is required → "Mileage is obligatory field"

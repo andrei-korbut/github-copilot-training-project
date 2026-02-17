@@ -68,7 +68,19 @@ Task<MaintenanceTemplateDto> CreateTemplateAsync(CreateMaintenanceTemplateDto dt
 
 ---
 
-## 🔐 Validation Rules
+## � Entity Model
+
+**MaintenanceTemplate:**
+- `id` (int, PK, auto-increment) – Unique template ID
+- `name` (string, required)
+- `intervalType` (`km` / `time`)
+- `intervalValue` (int, required)
+- `archived` (bool, default false)
+- `createdAt` (datetime, auto-set)
+
+---
+
+## �🔐 Validation Rules
 
 - Name is required → "Name is obligatory field"
 - IntervalType is required → "Interval type is obligatory field"
@@ -82,7 +94,7 @@ Task<MaintenanceTemplateDto> CreateTemplateAsync(CreateMaintenanceTemplateDto dt
 
 ## 🔗 Dependencies
 
-- 01 – GET Maintenance Templates
+- None
 
 ---
 

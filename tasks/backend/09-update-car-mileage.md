@@ -56,7 +56,17 @@ Task<bool> UpdateCarMileageAsync(int id, int currentKm)
 
 ---
 
-## 🔐 Validation Rules
+## � Entity Model
+
+**Car:**
+- `id` (int, PK) – Unique car ID
+- `name` (string, required)
+- `currentKm` (int, required)
+- `createdAt` (datetime, auto-set)
+
+---
+
+## �🔐 Validation Rules
 
 - id must be valid integer
 - Car with id must exist → 404

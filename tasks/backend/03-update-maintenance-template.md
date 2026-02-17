@@ -63,7 +63,19 @@ Task<MaintenanceTemplateDto?> UpdateTemplateAsync(int id, UpdateMaintenanceTempl
 
 ---
 
-## 🔐 Validation Rules
+## � Entity Model
+
+**MaintenanceTemplate:**
+- `id` (int, PK, auto-increment) – Unique template ID
+- `name` (string, required)
+- `intervalType` (`km` / `time`)
+- `intervalValue` (int, required)
+- `archived` (bool, default false)
+- `createdAt` (datetime, auto-set)
+
+---
+
+## �🔐 Validation Rules
 
 - id must be valid integer
 - Template with id must exist → 404

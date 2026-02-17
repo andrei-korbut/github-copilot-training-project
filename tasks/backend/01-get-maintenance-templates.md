@@ -65,7 +65,19 @@ Task<List<MaintenanceTemplateDto>> GetAllTemplatesAsync()
 
 ---
 
-## 🔐 Validation Rules
+## � Entity Model
+
+**MaintenanceTemplate:**
+- `id` (int, PK, auto-increment) – Unique template ID
+- `name` (string, required)
+- `intervalType` (`km` / `time`)
+- `intervalValue` (int, required)
+- `archived` (bool, default false)
+- `createdAt` (datetime, auto-set)
+
+---
+
+## �🔐 Validation Rules
 
 - Return empty array if no templates exist
 - Always return 200 OK (even for empty list)
