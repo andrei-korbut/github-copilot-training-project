@@ -35,6 +35,20 @@ services:
     networks:
       - maintenance-network
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: maintenance-tracker-frontend
+    environment:
+      - VITE_API_URL=http://backend:80
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - maintenance-network
+
 volumes:
   mssql-data:
     name: maintenance-tracker-mssql-data

@@ -1,11 +1,12 @@
-# Car Maintenance Tracker - Backend Setup
+# Car Maintenance Tracker
 
-This is the backend API for the Car Maintenance Tracker application, built with .NET 9 Web API and SQL Server.
+A full-stack application for tracking car maintenance, built with .NET 9 Web API, React 18 + TypeScript, and SQL Server.
 
 ## Prerequisites
 
 - **Docker Desktop 4.x+** with WSL2 backend (Windows users)
 - **.NET 9 SDK** (for local development without Docker)
+- **Node.js 18+** (for local frontend development without Docker)
 - **Minimum 4GB RAM** available for containers
 - **Minimum 5GB disk space** for Docker images and volumes
 
@@ -33,16 +34,21 @@ From the **workspace root** directory, run:
 docker-compose up --build
 ```
 
-**First-time startup takes 30-45 seconds** while:
+**First-time startup takes 60-90 seconds** while:
 - SQL Server container initializes
-- Database is created
-- Migrations are applied automatically
+- Database is created and migrations are applied
+- Backend container builds and starts
+- Frontend container builds and starts
 
 ### 3. Verify the Setup
 
-Once containers are running, verify the following:
+Once all containers are running, verify the following:
 
-- **Health Check Endpoint**: http://localhost:5000/health
+- **Frontend Application**: http://localhost:3000
+  - Should display "Car Maintenance Tracker" home page
+  - Styled with Tailwind CSS
+
+- **Backend Health Check**: http://localhost:5000/health
   - Should return: `{"status":"healthy","timestamp":"..."}`
 
 - **Swagger UI**: http://localhost:5000/swagger
@@ -69,6 +75,22 @@ backend/
 │   └── CarMaintenanceTracker.Api.csproj
 └── Dockerfile                       # Multi-stage Docker build
 
+frontend/
+├── src/
+│   ├── components/                  # React components (empty initially)
+│   ├── pages/
+│   │   └── Home.tsx                # Home page component
+│   ├── services/                    # API service layer (empty initially)
+│   ├── App.tsx                     # Main application component
+│   └── index.tsx                   # Application entry point
+├── nginx/
+│   └── default.conf                # nginx configuration for SPA
+├── Dockerfile                      # Multi-stage Docker build
+├── package.json                    # npm dependencies
+├── tailwind.config.js              # Tailwind CSS configuration
+├── vite.config.ts                  # Vite configuration
+└── tsconfig.json                   # TypeScript configuration
+
 docker-compose.yml                   # Container orchestration
 .env                                 # Environment variables (not committed)
 .env.example                        # Environment template
@@ -83,8 +105,18 @@ docker-compose.yml                   # Container orchestration
 
 ## Docker Services
 
+### Frontend Service
+- **Container name**: `maintenance-tracker-frontend`
+- **Technology**: React 18 + TypeScript + Vite
+- **External port**: 3000
+- **Internal port**: 80 (nginx)
+- **Network**: `maintenance-network`
+- **Depends on**: `backend`
+- **Environment**: `VITE_API_URL=http://backend:80`
+
 ### Backend Service
 - **Container name**: `maintenance-tracker-backend`
+- **Technology**: .NET 9 Web API
 - **External port**: 5000
 - **Internal port**: 80
 - **Network**: `maintenance-network`
@@ -105,6 +137,9 @@ docker-compose.yml                   # Container orchestration
 # View all logs
 docker-compose logs
 
+# View frontend logs only
+docker-compose logs frontend
+
 # View backend logs only
 docker-compose logs backend
 
@@ -112,7 +147,7 @@ docker-compose logs backend
 docker-compose logs database
 
 # Follow logs in real-time
-docker-compose logs -f backend
+docker-compose logs -f frontend backend
 ```
 
 ### Stop Containers
@@ -146,7 +181,36 @@ dotnet ef migrations add YourMigrationName
 
 Migrations are applied automatically when the container starts.
 
+### Frontend Local Development (Without Docker)
+
+For faster frontend development with hot reload:
+
+```bash
+# Navigate to frontend folder
+cd frontend
+
+# Install dependencies (first time only)
+npm install
+
+# Start development server
+npm run dev
+```
+
+The frontend will be available at http://localhost:5173 (Vite default port).
+
+**Note:** When developing locally, update `frontend/.env` to use `http://localhost:5000` for the backend API URL.
+
 ## Troubleshooting
+
+### Port 3000 Already in Use
+
+If port 3000 is occupied, modify `docker-compose.yml`:
+
+```yaml
+frontend:
+  ports:
+    - "3001:80"  # Change 3000 to another port
+```
 
 ### Port 5000 Already in Use
 
@@ -227,24 +291,64 @@ Default logging configuration:
 - **Level**: Information
 - **ASP.NET Core**: Warning level
 
+### Frontend Technology Stack
+
+- **Framework**: React 18 with TypeScript
+- **Build tool**: Vite 8
+- **Styling**: Tailwind CSS v3
+- **Routing**: React Router DOM v6
+- **Production server**: nginx (Alpine Linux)
+- **Hot reload**: Enabled in development mode (`npm run dev`)
+
+### Frontend Environment Variables
+
+- **VITE_API_URL**: Backend API base URL
+  - Docker (internal): `http://backend:80`
+  - Local dev: `http://localhost:5000`
+- Access in code: `import.meta.env.VITE_API_URL`
+- Variables must be prefixed with `VITE_` to be exposed to the app
+
+### nginx Configuration
+
+The frontend uses nginx to serve the production React build:
+- **SPA routing**: All routes fallback to `index.html` via `try_files`
+- **Static asset caching**: CSS, JS, images cached for 1 year
+- **HTML caching disabled**: Ensures fresh app versions
+- Configuration: `frontend/nginx/default.conf`
+
 ## Next Steps
 
-After completing this infrastructure setup:
+After completing the infrastructure setup:
 
 1. ✅ Backend container running
 2. ✅ Database accessible and persistent
 3. ✅ Health check endpoint working
 4. ✅ Swagger UI accessible
 5. ✅ Automatic migrations on startup
+6. ✅ Frontend container running
+7. ✅ React + TypeScript + Tailwind CSS configured
+8. ✅ Home page displaying correctly
 
 **Next tasks:**
 - Add entity models (MaintenanceTemplate, Car, etc.)
-- Implement business logic endpoints
-- Set up frontend container
+- Implement backend API endpoints
+- Create frontend UI components
+- Implement API service layer in frontend
+- Add authentication/authorization
 
 ## References
 
+**Backend:**
 - [.NET 9 Documentation](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9)
 - [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/)
-- [Docker Compose](https://docs.docker.com/compose/)
 - [SQL Server on Docker](https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker)
+
+**Frontend:**
+- [React Documentation](https://react.dev/)
+- [Vite Documentation](https://vite.dev/)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [React Router](https://reactrouter.com/)
+
+**DevOps:**
+- [Docker Compose](https://docs.docker.com/compose/)
+- [nginx Documentation](https://nginx.org/en/docs/)

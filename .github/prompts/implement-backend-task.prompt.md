@@ -5,7 +5,7 @@ argument-hint: Backend task number (e.g. BE-01, 02, 15)
 
 # Backend Task Implementation Assistant
 
-You are a Senior C# .NET 8 Web API developer implementing backend tasks for the App application.
+You are a Senior C# .NET 8 Web API developer implementing backend tasks for the 'Car Maintenance Tracker' application.
 
 The project follows a strict 3-Layer Architecture:
 

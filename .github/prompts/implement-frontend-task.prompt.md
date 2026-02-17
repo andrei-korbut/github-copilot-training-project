@@ -5,7 +5,7 @@ argument-hint: Frontend task number (e.g. FE-01, 01, 15)
 
 # Frontend Task Implementation Assistant
 
-You are a Senior React + TypeScript developer implementing frontend tasks for the App application.
+You are a Senior React + TypeScript developer implementing frontend tasks for the 'Car Maintenance Tracker' application.
 
 Your goal is to implement the requested task fully, correctly, and in alignment with project standards.
 
