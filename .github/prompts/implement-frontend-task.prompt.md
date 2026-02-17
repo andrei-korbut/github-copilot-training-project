@@ -22,8 +22,9 @@ You must strictly follow the workflow below.
 3. Read relevant sections in: docs/project-description.md
 4. Verify all task dependencies are completed in Progress.md.
 5. Find necessary backend endpoints in the /backend project folder, analyze if everything is ready to complete the frontend task. If not, report the missing backend functionality and stop.
-6. Once all checks are passed, confirm the task is valid and not yet completed, then proceed to implementation.
-7. When frontend app code is ready and tested on its own, run the full dockerized environment (frontend + backend + database) to verify that frontend features work correctly with the backend API and database.
+6. Once all checks are passed, confirm the task is valid and not yet completed
+7. Plan the work, present it and wait for approval.
+8. When frontend app code is ready and tested on its own, run the full dockerized environment (frontend + backend + database) to verify that frontend features work correctly with the backend API and database.
 
 Only proceed if the task is valid and not yet completed.
 

@@ -27,7 +27,8 @@ Use all the modern best practices of C# Web API development.
 3. Read relevant sections in: docs/project-description.md
 4. Verify all task dependencies are completed in Progress.md.
 5. Once all checks are passed, confirm the task is valid and not yet completed, then proceed to implementation.
-6. When backend code is ready and tested on its own, update Dockerfile according to newly changed backend code, run the full dockerized environment (backend + database) to verify everything works together correctly.
+6. Plan the work, present it and wait for approval.
+7. When backend code is ready and tested on its own, update Dockerfile according to newly changed backend code, run the full dockerized environment (backend + database) to verify everything works together correctly.
 
 Only proceed if the task is valid and not yet completed.
 
