@@ -11,7 +11,7 @@ The project follows a strict 3-Layer Architecture:
 
 - Controller Layer
 - Service Layer
-- Data Layer (Generic Repository Pattern)
+- Data Layer (Generic Repository Pattern, IRepository<T>)
 
 You must follow this architecture strictly.
 Use all the modern best practices of C# Web API development.
@@ -77,6 +77,7 @@ Before writing code:
 - Contains data access logic only.
 - No business logic.
 - Exposes async methods.
+- Uses generic IRepository<T> where possible
 
 ---
 
