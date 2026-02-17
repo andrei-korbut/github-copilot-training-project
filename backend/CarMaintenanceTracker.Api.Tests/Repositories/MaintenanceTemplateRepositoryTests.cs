@@ -9,12 +9,12 @@ namespace CarMaintenanceTracker.Api.Tests.Repositories;
 public class MaintenanceTemplateRepositoryTests
 {
     [Fact]
-    public async Task CreateAsync_ValidTemplate_CallsDbContextAdd()
+    public async Task AddAsync_ValidTemplate_CallsDbContextAdd()
     {
         // Arrange
         var mockSet = new Mock<DbSet<MaintenanceTemplate>>();
         var mockContext = new Mock<AppDbContext>(new DbContextOptions<AppDbContext>());
-        mockContext.Setup(m => m.MaintenanceTemplates).Returns(mockSet.Object);
+        mockContext.Setup(m => m.Set<MaintenanceTemplate>()).Returns(mockSet.Object);
         
         var repository = new MaintenanceTemplateRepository(mockContext.Object);
         var template = new MaintenanceTemplate
@@ -25,7 +25,7 @@ public class MaintenanceTemplateRepositoryTests
         };
 
         // Act
-        await repository.CreateAsync(template);
+        await repository.AddAsync(template);
 
         // Assert
         mockSet.Verify(m => m.Add(It.Is<MaintenanceTemplate>(t => 
@@ -36,12 +36,12 @@ public class MaintenanceTemplateRepositoryTests
     }
 
     [Fact]
-    public async Task CreateAsync_ValidTemplate_CallsSaveChangesAsync()
+    public async Task AddAsync_ValidTemplate_CallsSaveChangesAsync()
     {
         // Arrange
         var mockSet = new Mock<DbSet<MaintenanceTemplate>>();
         var mockContext = new Mock<AppDbContext>(new DbContextOptions<AppDbContext>());
-        mockContext.Setup(m => m.MaintenanceTemplates).Returns(mockSet.Object);
+        mockContext.Setup(m => m.Set<MaintenanceTemplate>()).Returns(mockSet.Object);
         mockContext.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
         
@@ -54,19 +54,19 @@ public class MaintenanceTemplateRepositoryTests
         };
 
         // Act
-        await repository.CreateAsync(template);
+        await repository.AddAsync(template);
 
         // Assert
         mockContext.Verify(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CreateAsync_ValidTemplate_ReturnsEntity()
+    public async Task AddAsync_ValidTemplate_ReturnsEntity()
     {
         // Arrange
         var mockSet = new Mock<DbSet<MaintenanceTemplate>>();
         var mockContext = new Mock<AppDbContext>(new DbContextOptions<AppDbContext>());
-        mockContext.Setup(m => m.MaintenanceTemplates).Returns(mockSet.Object);
+        mockContext.Setup(m => m.Set<MaintenanceTemplate>()).Returns(mockSet.Object);
         mockContext.Setup(m => m.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
         
@@ -79,7 +79,7 @@ public class MaintenanceTemplateRepositoryTests
         };
 
         // Act
-        var result = await repository.CreateAsync(template);
+        var result = await repository.AddAsync(template);
 
         // Assert
         Assert.NotNull(result);

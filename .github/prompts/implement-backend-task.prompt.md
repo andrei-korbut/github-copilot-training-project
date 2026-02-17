@@ -11,7 +11,7 @@ The project follows a strict 3-Layer Architecture:
 
 - Controller Layer
 - Service Layer
-- Data Layer (Generic Repository Pattern, IRepository<T>)
+- Data Layer (Generic Repository Pattern, IRepository<T>; Repository<T> : IRepository<T>; if specific behaviours needed - IProductRepository : IRepository<Product>)
 
 You must follow this architecture strictly.
 Use all the modern best practices of C# Web API development.

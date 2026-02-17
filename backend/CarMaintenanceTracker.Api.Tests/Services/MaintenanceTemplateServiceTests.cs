@@ -13,7 +13,7 @@ public class MaintenanceTemplateServiceTests
     {
         // Arrange
         var mockRepo = new Mock<IMaintenanceTemplateRepository>();
-        mockRepo.Setup(r => r.CreateAsync(It.IsAny<MaintenanceTemplate>()))
+        mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
         var service = new MaintenanceTemplateService(mockRepo.Object);
@@ -40,7 +40,7 @@ public class MaintenanceTemplateServiceTests
     {
         // Arrange
         var mockRepo = new Mock<IMaintenanceTemplateRepository>();
-        mockRepo.Setup(r => r.CreateAsync(It.IsAny<MaintenanceTemplate>()))
+        mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
         var service = new MaintenanceTemplateService(mockRepo.Object);
@@ -63,7 +63,7 @@ public class MaintenanceTemplateServiceTests
     {
         // Arrange
         var mockRepo = new Mock<IMaintenanceTemplateRepository>();
-        mockRepo.Setup(r => r.CreateAsync(It.IsAny<MaintenanceTemplate>()))
+        mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
         var service = new MaintenanceTemplateService(mockRepo.Object);
@@ -88,7 +88,7 @@ public class MaintenanceTemplateServiceTests
     {
         // Arrange
         var mockRepo = new Mock<IMaintenanceTemplateRepository>();
-        mockRepo.Setup(r => r.CreateAsync(It.IsAny<MaintenanceTemplate>()))
+        mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
         var service = new MaintenanceTemplateService(mockRepo.Object);
@@ -103,7 +103,7 @@ public class MaintenanceTemplateServiceTests
         await service.CreateTemplateAsync(dto);
 
         // Assert
-        mockRepo.Verify(r => r.CreateAsync(It.Is<MaintenanceTemplate>(t =>
+        mockRepo.Verify(r => r.AddAsync(It.Is<MaintenanceTemplate>(t =>
             t.Name == "Oil Change" &&
             t.IntervalType == "km" &&
             t.IntervalValue == 10000 &&
@@ -116,7 +116,7 @@ public class MaintenanceTemplateServiceTests
     {
         // Arrange
         var mockRepo = new Mock<IMaintenanceTemplateRepository>();
-        mockRepo.Setup(r => r.CreateAsync(It.IsAny<MaintenanceTemplate>()))
+        mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
         var service = new MaintenanceTemplateService(mockRepo.Object);
@@ -131,7 +131,7 @@ public class MaintenanceTemplateServiceTests
         await service.CreateTemplateAsync(dto);
 
         // Assert
-        mockRepo.Verify(r => r.CreateAsync(It.Is<MaintenanceTemplate>(t =>
+        mockRepo.Verify(r => r.AddAsync(It.Is<MaintenanceTemplate>(t =>
             t.Name == "Air Filter" &&
             t.IntervalType == "time" &&
             t.IntervalValue == 365
@@ -164,7 +164,7 @@ public class MaintenanceTemplateServiceTests
         // Arrange
         MaintenanceTemplate? capturedEntity = null;
         var mockRepo = new Mock<IMaintenanceTemplateRepository>();
-        mockRepo.Setup(r => r.CreateAsync(It.IsAny<MaintenanceTemplate>()))
+        mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .Callback<MaintenanceTemplate>(t => capturedEntity = t)
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
@@ -193,7 +193,7 @@ public class MaintenanceTemplateServiceTests
     {
         // Arrange
         var mockRepo = new Mock<IMaintenanceTemplateRepository>();
-        mockRepo.Setup(r => r.CreateAsync(It.IsAny<MaintenanceTemplate>()))
+        mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => 
             { 
                 t.Id = 42;

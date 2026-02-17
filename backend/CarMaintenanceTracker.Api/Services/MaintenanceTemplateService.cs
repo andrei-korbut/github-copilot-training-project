@@ -32,7 +32,7 @@ public class MaintenanceTemplateService : IMaintenanceTemplateService
         };
 
         // Save to database
-        var createdTemplate = await _repository.CreateAsync(template);
+        var createdTemplate = await _repository.AddAsync(template);
 
         // Map Entity to Response DTO
         return new MaintenanceTemplateDto

@@ -3,19 +3,16 @@ using CarMaintenanceTracker.Api.Entities;
 
 namespace CarMaintenanceTracker.Api.Repositories;
 
-public class MaintenanceTemplateRepository : IMaintenanceTemplateRepository
+/// <summary>
+/// Repository implementation for MaintenanceTemplate entity.
+/// Inherits base CRUD operations from Repository and implements specific interface.
+/// </summary>
+public class MaintenanceTemplateRepository : Repository<MaintenanceTemplate>, IMaintenanceTemplateRepository
 {
-    private readonly AppDbContext _context;
-
-    public MaintenanceTemplateRepository(AppDbContext context)
+    public MaintenanceTemplateRepository(AppDbContext context) : base(context)
     {
-        _context = context;
     }
 
-    public async Task<MaintenanceTemplate> CreateAsync(MaintenanceTemplate template)
-    {
-        _context.MaintenanceTemplates.Add(template);
-        await _context.SaveChangesAsync();
-        return template;
-    }
+    // Add specific methods for MaintenanceTemplate here if needed
+    // Base CRUD operations (GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync, DeleteAsync) inherited from Repository<T>
 }
