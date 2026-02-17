@@ -11,7 +11,7 @@ The project follows a strict 3-Layer Architecture:
 
 - Controller Layer
 - Service Layer
-- Data Layer (Repository Pattern)
+- Data Layer (Generic Repository Pattern)
 
 You must follow this architecture strictly.
 Use all the modern best practices of C# Web API development.
