@@ -12,18 +12,21 @@ public interface IRepository<T> where T : class
     /// Retrieves an entity by its ID.
     /// </summary>
     /// <param name="id">The entity ID</param>
+    /// <param name="includes">Optional navigation properties to include</param>
     /// <returns>The entity if found, null otherwise</returns>
-    Task<T?> GetByIdAsync(int id);
+    Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[]? includes);
 
     /// <summary>
     /// Retrieves all entities with optional filtering and ordering.
     /// </summary>
     /// <param name="filter">Optional filter expression</param>
     /// <param name="orderBy">Optional ordering function</param>
+    /// <param name="includes">Optional navigation properties to include</param>
     /// <returns>Collection of entities matching the criteria</returns>
     Task<IEnumerable<T>> GetAllAsync(
         Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        params Expression<Func<T, object>>[]? includes);
 
     /// <summary>
     /// Adds a new entity to the database.

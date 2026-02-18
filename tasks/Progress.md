@@ -81,6 +81,55 @@ When a task is completed:
     - ✅ Archived status can be toggled via update
     - ✅ CreatedAt timestamp preserved across updates
   - Build succeeds without warnings
+- ✅ **07 – POST Create Car** (Completed: February 18, 2026)
+  - Implemented POST /api/cars endpoint to create new cars with associated maintenance items
+  - Created Car and CarMaintenanceItem entities with proper relationships
+  - Returns 201 Created with Location header pointing to created resource
+  - Returns 400 Bad Request for validation errors (missing required fields, negative mileage, invalid templates)
+  - Returns 500 Internal Server Error for unexpected errors
+  - Implemented across 3-layer architecture:
+    - Repository: Created ICarRepository and CarRepository extending generic Repository<T>
+      - CreateCarWithMaintenanceItemsAsync handles transactional creation (car + items as atomic operation)
+      - GetCarWithMaintenanceItemsAsync loads car with maintenance items and template information
+      - GetAllCarsWithMaintenanceItemsAsync returns all cars sorted by CreatedAt descending
+    - Service: Created ICarService and CarService with business logic
+      - Validates only non-archived templates can be assigned to cars
+      - Calculates next service km/date based on interval type:
+        - km-based: CalculatedNextKm = LastServiceKm + IntervalValue
+        - time-based: CalculatedNextDate = LastServiceDate + IntervalValue days
+      - Maps DTOs to entities and back with proper relationships
+    - Controller: Created CarsController with POST, GET (all), GET (by id) endpoints
+      - Returns 201 Created with Location header
+      - Proper error handling and logging
+  - Created DTOs:
+    - CreateCarDto with nested CreateCarMaintenanceItemDto array
+    - CarDto with nested CarMaintenanceItemDto array for responses
+  - Validation rules enforced:
+    - Name required → "Name is obligatory field"
+    - CurrentKm required → "Mileage is obligatory field"
+    - CurrentKm must be >= 0
+    - MaintenanceItems array can be empty
+    - For each maintenance item: MaintenanceTemplateId, IntervalValue (> 0), IntervalType ("km" or "time") required
+    - Only non-archived templates can be assigned
+  - Database:
+    - Updated AppDbContext with Cars and CarMaintenanceItems DbSets
+    - Configured entity relationships (Car → CarMaintenanceItems, CarMaintenanceItem → MaintenanceTemplate)
+    - Created and applied migration: AddCarAndCarMaintenanceItemEntities
+    - Foreign keys: CarId (CASCADE), MaintenanceTemplateId (RESTRICT)
+  - Registered services in Program.cs (ICarRepository, ICarService)
+  - Tested successfully in docker-compose environment:
+    - ✅ Car created with maintenance items returns 201 with correct calculations
+    - ✅ Next service km calculated correctly (km-based: 40000 + 10000 = 50000)
+    - ✅ Next service date calculated correctly (time-based: 2025-06-15 + 365 days = 2026-06-15)
+    - ✅ Car created with no maintenance items (empty array) works
+    - ✅ Location header returned with correct URI
+    - ✅ Validation errors return 400 (empty name, negative mileage, non-existent template)
+    - ✅ Archived templates rejected with 400 error message
+    - ✅ GET /api/cars returns all cars sorted by CreatedAt descending
+    - ✅ GET /api/cars/{id} returns specific car with maintenance items
+  - All acceptance criteria met
+  - Build succeeds without warnings
+  - Transaction atomicity verified (car + maintenance items created together or not at all)
 
 ### Frontend
 - ✅ **01 – Display Maintenance Templates** (Completed: February 18, 2026)

@@ -20,17 +20,44 @@ public class Repository<T> : IRepository<T> where T : class
     }
 
     /// <inheritdoc/>
-    public async Task<T?> GetByIdAsync(int id)
+    public async Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[]? includes)
     {
-        return await _dbSet.FindAsync(id);
+        if (includes == null || includes.Length == 0)
+        {
+            return await _dbSet.FindAsync(id);
+        }
+
+        IQueryable<T> query = _dbSet;
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+
+        // Use a property named "Id" for filtering - assumes all entities have an Id property
+        var parameter = Expression.Parameter(typeof(T), "e");
+        var property = Expression.Property(parameter, "Id");
+        var idConstant = Expression.Constant(id);
+        var equals = Expression.Equal(property, idConstant);
+        var lambda = Expression.Lambda<Func<T, bool>>(equals, parameter);
+
+        return await query.FirstOrDefaultAsync(lambda);
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<T>> GetAllAsync(
         Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        params Expression<Func<T, object>>[]? includes)
     {
         IQueryable<T> query = _dbSet.AsNoTracking();
+
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
 
         if (filter != null)
         {

@@ -18,6 +18,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Register services
 builder.Services.AddScoped<IMaintenanceTemplateService, MaintenanceTemplateService>();
+builder.Services.AddScoped<ICarService, CarService>();
 
 // Configure CORS for frontend communication
 builder.Services.AddCors(options =>
