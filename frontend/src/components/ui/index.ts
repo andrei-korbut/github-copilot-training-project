@@ -5,3 +5,4 @@ export { Input } from './input';
 export { Select } from './select';
 export { Alert } from './alert';
 export { Modal } from './modal';
+export { DateInput } from './date-input';

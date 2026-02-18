@@ -174,4 +174,92 @@ When a task is completed:
     - Duplicate submission prevention
   - All acceptance criteria met
   - TypeScript compilation successful (no errors)
-  - Tested successfully in dockerized environment (frontend + backend + database)
+  - Tested successfully in dockerized environment (frontend + backend + database)- ✅ **06 – Add Car with Maintenance Items** (Completed: February 18, 2026)
+  - Implemented POST /api/cars endpoint integration to create new cars with maintenance items
+  - Created comprehensive type definitions and API layer:
+    - `src/types/car.ts` with Car, CreateCarDto, and CreateCarMaintenanceItemDto interfaces
+    - `src/features/cars/api/cars-api.ts` with createCar and getAllCars functions
+    - Updated `src/constants/api-endpoints.ts` with CARS endpoint
+  - Created cars feature folder structure following feature-based architecture:
+    - **Hooks:**
+      - `use-car-form.ts` - Complex form state management with Map-based selectedTemplates tracking
+      - `use-create-car.ts` - API submission logic with success/error handling
+    - **Components:**
+      - `maintenance-item-selector.tsx` - Template selection with checkboxes, displays available non-archived templates
+      - `maintenance-item-form.tsx` - Dynamic interval editing and last service inputs (km or date based on type)
+  - Created reusable DateInput component (`src/components/ui/date-input.tsx`):
+    - Implements dd/mm/yyyy input mask with automatic formatting
+    - Removes non-numeric characters automatically
+    - Formats as user types (dd → dd/mm → dd/mm/yyyy)
+    - Includes validation and error display
+  - Created AddCarPage (`src/pages/cars/add-car-page.tsx`):
+    - Multi-section form layout (Car Details + Assign Maintenance Items)
+    - Fetches non-archived templates on page load using useFetchTemplates hook
+    - Template selection with checkboxes - shows template name and interval info
+    - Dynamic maintenance item configuration section (only shows when templates selected)
+    - Conditional last service inputs:
+      - km-based templates: number input for lastServiceKm
+      - time-based templates: date input with dd/mm/yyyy mask for lastServiceDate
+    - Date format conversion: dd/mm/yyyy → ISO 8601 format for backend
+    - Comprehensive validation:
+      - Name required → "Name is obligatory field"
+      - Mileage required → "Mileage is obligatory field"
+      - Mileage must be >= 0
+      - Interval values must be > 0 for each selected item
+      - Date validation: day <= 31, month <= 12, year >= 2000
+    - Loading states with spinner during template fetch and car submission
+    - Success notification "Car created successfully" with auto-navigation
+    - Server error handling (400, 500) with user-friendly messages
+    - Back button and Cancel button both navigate to /cars
+    - Disable form inputs and buttons during submission
+  - Created CarsListPage placeholder (`src/pages/cars/cars-list-page.tsx`):
+    - Simple placeholder for redirect target (full implementation in Task #05)
+    - Includes "Add Car" button for navigation to /cars/new
+  - Updated router (`src/app/router.tsx`):
+    - Added /cars route for CarsListPage
+    - Added /cars/new route for AddCarPage
+  - Form features:
+    - Clean card-based UI with proper spacing and shadows
+    - Responsive layout with max-width container
+    - Clear section headers and descriptions
+    - Dynamic labels showing "km" or "days" based on interval type
+    - Collapsible selected items section with count display
+    - Proper error message positioning under each field
+    - Consistent button styling with loading states
+  - Edge cases handled:
+    - Creating car with no maintenance items (empty array) works correctly
+    - No templates available shows empty state message
+    - Archived templates properly excluded from selection
+    - Invalid date formats caught by frontend validation
+    - Backend validation errors properly displayed
+    - Network errors handled gracefully
+  - All acceptance criteria met:
+    - ✅ Page accessible at /cars/new
+    - ✅ Form displays correctly with all fields
+    - ✅ Templates fetched and displayed
+    - ✅ Archived templates excluded
+    - ✅ All validations work with correct error messages
+    - ✅ POST request creates car successfully
+    - ✅ Navigates to /cars after success
+    - ✅ Success notification shown
+    - ✅ Cancel navigates back without saving
+    - ✅ Date mask works correctly (dd/mm/yyyy)
+    - ✅ Dynamic interval labels (km/days)
+    - ✅ No console errors
+    - ✅ No TypeScript errors
+  - Tested successfully in dockerized environment (frontend + backend + database):
+    - ✅ Car created with maintenance items returns 201 with correct data
+    - ✅ Car created without maintenance items works
+    - ✅ Non-archived templates fetched and displayed correctly
+    - ✅ Date format conversion works (dd/mm/yyyy → ISO 8601)
+    - ✅ Next service calculations correct (verified via API)
+    - ✅ Navigation to /cars works after successful creation
+    - ✅ Validation errors display correctly
+    - ✅ Loading states work properly
+  - Architecture compliance:
+    - Feature-based structure maintained
+    - Separation of concerns (hooks, components, API layer)
+    - Reusable components in proper locations
+    - Type safety with strict TypeScript
+    - Consistent styling with Tailwind CSS
+    - No business logic in page components
