@@ -758,4 +758,125 @@ When a task is completed:
     - Follows established patterns from other features
     - Proper error handling with user-friendly messages
     - API client updated to handle 204 No Content responses (undefined as T)
-    - Loading states and disabled states properly managed
+    - Loading states and disabled states properly managed- ✅ **08 – Track Change from Cars Page** (Completed: February 18, 2026)
+  - Implemented Track Change functionality from Car Detail page with modal UI
+  - Created comprehensive car detail page and track change feature following feature-based architecture:
+    - **Types & API Layer:**
+      - Added `CreateTrackChangeDto` and `TrackChangeDto` interfaces in `src/types/car.ts`
+      - Added `TRACK_CHANGE` endpoint constant in `src/constants/api-endpoints.ts`
+      - Added `trackChange()` and `getCarById()` functions in `src/features/cars/api/cars-api.ts`
+    - **Custom Hooks:**
+      - Created `useTrackChange` hook in `src/features/cars/hooks/` for modal state management
+      - Manages isOpen, isLoading, error, kmValue, dateValue states
+      - Auto-fills current km or today's date based on interval type
+      - Handles validation (required fields, >= 0 for km, date format, no future dates)
+      - Provides openModal, closeModal, handleSubmit functions
+      - Calls API with proper error handling (400, 404, 500)
+    - **Feature Components:**
+      - Created `TrackChangeModal` component in `src/features/cars/components/`
+        - Modal with maintenance item details (template name, interval, last service, next due)
+        - Conditional input: km (number) for km-based, date (dd/mm/yyyy mask) for time-based
+        - Auto-filled values (car's current km or today's date)
+        - User can override auto-filled values
+        - Save/Cancel buttons with loading state
+        - Validation error display
+      - Created `MaintenanceItemCard` component in `src/features/cars/components/`
+        - Displays individual maintenance item details
+        - Shows template name, interval info, last service, next due
+        - Conditional display based on interval type (km vs time)
+        - Track Change button
+    - **Car Detail Page:**
+      - Created `CarDetailPage` (`src/pages/cars/car-detail-page.tsx`)
+      - Fetches specific car data using GET /api/cars/{id}
+      - Displays car name and current mileage (formatted with thousand separators)
+      - Lists all maintenance items in responsive grid (1/2/3 columns)
+      - Each item has Track Change button that opens modal
+      - Success notification "Maintenance tracked successfully" (auto-dismisses after 3 seconds)
+      - Car data auto-refreshes after successful track change
+      - Back to Cars button for navigation
+      - Loading state during fetch
+      - Error handling with user-friendly messages
+  - Updated router (`src/app/router.tsx`) to add `/cars/:id` route
+  - Updated `CarCard` component to make "View Details" button functional (navigates to `/cars/:id`)
+  - Track Change form features:
+    - Auto-fill current km or today's date based on interval type
+    - User can override auto-filled values
+    - Real-time validation with error messages
+    - Loading state with disabled buttons during submission
+    - Success notification after tracking
+    - Modal closes on success or cancel
+  - Validation rules enforced (frontend):
+    - **km-based items:**
+      - Km required → "Km is required for km-based maintenance items"
+      - Km must be valid number → "Km must be a valid number"
+      - Km must be >= 0 → "Km must be greater than or equal to 0"
+    - **time-based items:**
+      - Date required → "Date is required for time-based maintenance items"
+      - Date format dd/mm/yyyy → "Date must be in dd/mm/yyyy format"
+      - Day 1-31, Month 1-12, Year >= 2000
+      - Date cannot be in future → "Date cannot be in the future"
+  - Date format conversion: dd/mm/yyyy → ISO 8601 format (yyyy-mm-ddT10:00:00) for backend
+  - Error handling implemented:
+    - 400 Bad Request → displays backend validation message or "Invalid data provided"
+    - 404 Not Found → "Maintenance item not found"
+    - 500 Server Error → "Failed to track change. Please try again."
+    - Network errors → "Network error. Please try again."
+  - All acceptance criteria met:
+    - ✅ Track Change button visible on each maintenance item
+    - ✅ Modal opens correctly with maintenance details
+    - ✅ Auto-fill works for km/date based on type
+    - ✅ User can override auto-filled values
+    - ✅ All validations work (required, >= 0, date format, no future dates)
+    - ✅ POST request records change successfully
+    - ✅ Car data refreshes after success
+    - ✅ Success notification shown
+    - ✅ Modal closes after save
+    - ✅ Cancel closes modal without changes
+    - ✅ No console errors
+    - ✅ No TypeScript errors
+  - Tested successfully in dockerized environment (frontend + backend + database):
+    - ✅ Cars list page accessible at http://localhost:3000/cars
+    - ✅ "View Details" button navigates to car detail page (/cars/{id})
+    - ✅ Car detail page displays car information correctly (name, mileage)
+    - ✅ Maintenance items displayed in responsive grid layout
+    - ✅ Track Change button on each item
+    - ✅ Modal opens with correct maintenance item details
+    - ✅ Auto-fill tested:
+      - km-based: auto-fills with car's current km
+      - time-based: auto-fills with today's date (dd/mm/yyyy format)
+    - ✅ User can edit auto-filled values
+    - ✅ Date input mask works correctly (dd/mm/yyyy)
+    - ✅ Save button triggers API call
+    - ✅ Success flow tested:
+      - POST /api/trackchange/{id} creates TrackChange record
+      - Success notification appears
+      - Car data refreshes automatically
+      - Modal closes
+      - Maintenance item shows updated last service and next due values
+    - ✅ Cancel button closes modal without API call
+    - ✅ Validation errors tested:
+      - Empty km for km-based → error message displayed
+      - Empty date for time-based → error message displayed
+      - Negative km → error message displayed
+      - Invalid date format → error message displayed
+      - Future date → error message displayed
+    - ✅ Backend error handling tested:
+      - 404 for non-existent maintenance item → error message displayed
+      - 400 for validation errors → error message displayed
+    - ✅ Loading state works (Save button disabled during submission)
+    - ✅ Empty state when car has no maintenance items
+    - ✅ Back button navigates to cars list
+    - ✅ TypeScript compilation successful (no errors)
+    - ✅ No console errors during testing
+  - Architecture compliance:
+    - Feature-based structure maintained (cars feature folder)
+    - Separation of concerns (useTrackChange hook for logic, components for UI, API layer)
+    - Page component thin - only orchestrates composition
+    - Reusable UI components leveraged (Modal, Input, DateInput, Button, Card, Alert)
+    - Type safety with strict TypeScript (CreateTrackChangeDto, TrackChangeDto interfaces)
+    - Consistent styling with Tailwind CSS (modal, cards, responsive grids)
+    - No business logic in page components (all in useTrackChange hook)
+    - Follows established patterns from other features (templates, dashboard)
+    - Proper async/await error handling throughout
+    - Router updated to support dynamic car detail route (/cars/:id)
+    - CarCard navigation implemented correctly

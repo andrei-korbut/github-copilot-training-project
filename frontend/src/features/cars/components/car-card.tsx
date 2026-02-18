@@ -17,8 +17,7 @@ export const CarCard: React.FC<CarCardProps> = ({ car }) => {
   };
 
   const handleViewDetails = () => {
-    // Placeholder for future implementation (Task #08)
-    console.log('View details for car:', car.id);
+    navigate(`/cars/${car.id}`);
   };
 
   return (

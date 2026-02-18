@@ -4,4 +4,5 @@ export const API_ENDPOINTS = {
   MAINTENANCE_TEMPLATES: '/api/setup',
   CARS: '/api/cars',
   DASHBOARD: '/api/dashboard',
+  TRACK_CHANGE: '/api/trackchange',
 } as const;

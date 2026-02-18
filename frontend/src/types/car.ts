@@ -36,3 +36,15 @@ export interface CreateCarMaintenanceItemDto {
 export interface UpdateCarMileageDto {
   currentKm: number;
 }
+
+export interface CreateTrackChangeDto {
+  km?: number;
+  date?: string;
+}
+
+export interface TrackChangeDto {
+  id: number;
+  carMaintenanceItemId: number;
+  km?: number;
+  date?: string;
+}
