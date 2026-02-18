@@ -62,6 +62,32 @@ When a task is completed:
     - Code coverage report generated
 
 ### Frontend
+- ✅ **01 – Display Maintenance Templates** (Completed: February 18, 2026)
+  - Implemented GET /api/setup endpoint integration to fetch all maintenance templates
+  - Created reusable components following feature-based architecture:
+    - `EmptyState` component in `src/components/feedback/` for empty state display
+    - `TemplateCard` component in `src/features/templates/components/` for individual template display
+    - `TemplateList` component in `src/features/templates/components/` for template list rendering
+  - Created `useFetchTemplates` custom hook in `src/features/templates/hooks/` for data fetching with loading/error states
+  - Created `formatDate` utility in `src/utils/` for date formatting
+  - Added `getAllMaintenanceTemplates()` function to templates API service
+  - Updated SetupPage to display templates with loading, error, and empty states
+  - Templates display all required information:
+    - Template name with visual distinction for archived status (gray background + "Archived" badge)
+    - Interval type (km/time) and value with appropriate labels
+    - Created date formatted as readable string (e.g., "Feb 18, 2026")
+    - Edit, Archive, and Restore buttons (placeholders for future tasks)
+  - Automatic template list refresh after creating new template
+  - Features implemented:
+    - Loading spinner centered during fetch
+    - Error notification with Alert component on API failure
+    - Empty state message when no templates exist
+    - Responsive card layout using Tailwind CSS
+    - Proper sorting (newest first - handled by backend)
+  - All acceptance criteria met
+  - No TypeScript errors (strict typing enforced)
+  - Successfully tested in dockerized environment (frontend + backend + database)
+  - Templates fetch and render correctly with all fields displaying properly
 - ✅ **02 – Add Maintenance Template** (Completed: February 18, 2026)
   - Created AddTemplateForm component with modal UI
   - Implemented form validation with specific error messages

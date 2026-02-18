@@ -1,17 +1,36 @@
 import React, { useState } from 'react';
-import { Container, Card, Button } from '../../components/ui';
+import { Container, Button, Alert } from '../../components/ui';
+import { LoadingSpinner, EmptyState } from '../../components/feedback';
+import { TemplateList } from '../../features/templates/components/template-list';
+import { useFetchTemplates } from '../../features/templates/hooks/use-fetch-templates';
 import AddTemplateForm from './components/add-template-form';
 
 const SetupPage: React.FC = () => {
   const [showAddForm, setShowAddForm] = useState(false);
+  const { templates, isLoading, error, refetch } = useFetchTemplates();
 
-  const handleAddSuccess = () => {
+  const handleAddSuccess = async () => {
     setShowAddForm(false);
-    // Future: refresh templates list
+    await refetch();
   };
 
   const handleAddCancel = () => {
     setShowAddForm(false);
+  };
+
+  const handleEdit = (id: number) => {
+    // Placeholder for Task 03 - Edit Template
+    console.log('Edit template:', id);
+  };
+
+  const handleArchive = (id: number) => {
+    // Placeholder for Task 04 - Archive Template
+    console.log('Archive template:', id);
+  };
+
+  const handleRestore = (id: number) => {
+    // Placeholder for Task 04 - Restore Template
+    console.log('Restore template:', id);
   };
 
   return (
@@ -26,15 +45,34 @@ const SetupPage: React.FC = () => {
             </Button>
           </div>
 
-          {/* Content */}
-          <Card padding="lg">
-            <p className="text-gray-600 text-center">
-              No maintenance templates available.
-            </p>
-            <p className="text-gray-500 text-center mt-2 text-sm">
-              (Template list will be implemented in Task 01)
-            </p>
-          </Card>
+          {/* Error Notification */}
+          {error && (
+            <Alert variant="error">
+              {error}
+            </Alert>
+          )}
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center py-12">
+              <LoadingSpinner size="lg" />
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && !error && templates.length === 0 && (
+            <EmptyState message="No maintenance templates available." />
+          )}
+
+          {/* Templates List */}
+          {!isLoading && !error && templates.length > 0 && (
+            <TemplateList
+              templates={templates}
+              onEdit={handleEdit}
+              onArchive={handleArchive}
+              onRestore={handleRestore}
+            />
+          )}
         </div>
       </Container>
 
