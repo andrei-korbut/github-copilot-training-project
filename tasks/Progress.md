@@ -164,6 +164,47 @@ When a task is completed:
   - All acceptance criteria met
   - Build succeeds without warnings
   - Transaction atomicity verified (car + maintenance items created together or not at all)
+- ✅ **09 – PATCH Update Car Current Mileage** (Completed: February 18, 2026)
+  - Implemented PATCH /api/cars/{id}/km endpoint to update only the current mileage of a car
+  - Returns 204 No Content on success (lightweight inline editing for dashboard)
+  - Returns 404 Not Found when car doesn't exist
+  - Returns 400 Bad Request for validation errors (missing field, negative value)
+  - Returns 500 Internal Server Error for unexpected errors
+  - Implemented across 3-layer architecture:
+    - Repository: Uses existing generic Repository<T> methods (GetByIdAsync, UpdateAsync)
+    - Service: UpdateCarMileageAsync checks existence, updates only currentKm field
+    - Controller: HttpPatch endpoint with proper validation and error handling
+  - Created UpdateCarMileageDto:
+    - Single property: CurrentKm (required, must be >= 0)
+    - Data annotations for validation: [Required], [Range(0, int.MaxValue)]
+  - Validation rules enforced:
+    - CurrentKm is required → "Mileage is obligatory field"
+    - CurrentKm must be >= 0 → "Mileage must be greater than or equal to 0"
+    - Car with id must exist → 404 Not Found
+  - Only updates currentKm field, no other car properties or maintenance items affected
+  - Tested successfully in docker-compose environment:
+    - ✅ PATCH /api/cars/2002/km with valid data returns 204 No Content
+    - ✅ CurrentKm updated correctly (verified with GET /api/cars/2002)
+    - ✅ Only currentKm field modified, name and maintenance items unchanged
+    - ✅ 404 returned for non-existent car ID (99999)
+    - ✅ 400 returned for negative mileage with validation error message
+    - ✅ 0 km accepted as valid (edge case >= 0)
+  - All acceptance criteria met:
+    - ✅ PATCH /api/cars/{id}/km updates current mileage
+    - ✅ Returns 204 No Content on success
+    - ✅ Returns 404 if car not found
+    - ✅ Returns 400 for validation errors
+    - ✅ Only currentKm field modified
+    - ✅ No business logic in controller
+    - ✅ Repository pattern respected (uses generic Repository<T>)
+    - ✅ Build succeeds without warnings
+  - Architecture compliance:
+    - Service layer contains update logic
+    - Controller only handles HTTP concerns
+    - Uses generic Repository<T> - no entity-specific repository needed
+    - Async/await throughout
+    - Proper status codes and error handling
+    - Follows existing patterns from UpdateTemplateAsync
 - ✅ **11 – GET Dashboard Data** (Completed: February 18, 2026)
   - Implemented GET /api/dashboard/{carId} endpoint to retrieve dashboard data with calculated maintenance status
   - Returns 200 OK with DashboardDto containing car details and maintenance items with status calculations

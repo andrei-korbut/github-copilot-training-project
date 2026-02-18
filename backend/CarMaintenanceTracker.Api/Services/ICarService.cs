@@ -30,4 +30,12 @@ public interface ICarService
     /// <param name="carId">The car ID</param>
     /// <returns>Dashboard data with calculated status or null if car not found</returns>
     Task<DashboardDto?> GetDashboardDataAsync(int carId);
+
+    /// <summary>
+    /// Updates only the current mileage of a car.
+    /// </summary>
+    /// <param name="id">The car ID</param>
+    /// <param name="currentKm">The new current mileage</param>
+    /// <returns>True if updated successfully, false if car not found</returns>
+    Task<bool> UpdateCarMileageAsync(int id, int currentKm);
 }

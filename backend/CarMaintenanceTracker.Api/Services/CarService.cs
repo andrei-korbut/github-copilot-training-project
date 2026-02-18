@@ -316,4 +316,22 @@ public class CarService : ICarService
                 }).ToList()
         };
     }
+
+    public async Task<bool> UpdateCarMileageAsync(int id, int currentKm)
+    {
+        // Check if car exists
+        var car = await _carRepository.GetByIdAsync(id);
+        if (car == null)
+        {
+            return false;
+        }
+
+        // Update only the current mileage
+        car.CurrentKm = currentKm;
+
+        // Save changes
+        await _carRepository.UpdateAsync(car);
+
+        return true;
+    }
 }

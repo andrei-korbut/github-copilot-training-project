@@ -93,4 +93,34 @@ public class CarsController : ControllerBase
             return StatusCode(500, new { error = "An error occurred while retrieving cars" });
         }
     }
+
+    /// <summary>
+    /// Updates only the current mileage of a car.
+    /// PATCH /api/cars/{id}/km
+    /// </summary>
+    [HttpPatch("{id}/km")]
+    public async Task<IActionResult> UpdateCarMileage(int id, [FromBody] UpdateCarMileageDto dto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var updated = await _carService.UpdateCarMileageAsync(id, dto.CurrentKm);
+
+            if (!updated)
+            {
+                return NotFound(new { error = $"Car with ID {id} not found" });
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating car mileage");
+            return StatusCode(500, new { error = "An error occurred while updating the car mileage" });
+        }
+    }
 }
