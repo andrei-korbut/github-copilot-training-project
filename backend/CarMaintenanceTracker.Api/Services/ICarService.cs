@@ -23,4 +23,11 @@ public interface ICarService
     /// </summary>
     /// <returns>List of all cars</returns>
     Task<List<CarDto>> GetAllCarsAsync();
+
+    /// <summary>
+    /// Retrieves dashboard data for a specific car with calculated maintenance status.
+    /// </summary>
+    /// <param name="carId">The car ID</param>
+    /// <returns>Dashboard data with calculated status or null if car not found</returns>
+    Task<DashboardDto?> GetDashboardDataAsync(int carId);
 }

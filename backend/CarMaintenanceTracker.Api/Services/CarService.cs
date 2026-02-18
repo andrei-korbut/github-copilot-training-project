@@ -159,6 +159,32 @@ public class CarService : ICarService
         return carsList.Select(MapCarToDto).ToList();
     }
 
+    public async Task<DashboardDto?> GetDashboardDataAsync(int carId)
+    {
+        var car = await _carRepository.GetByIdAsync(carId, c => c.MaintenanceItems);
+        
+        if (car == null) return null;
+
+        // Load templates for maintenance items
+        if (car.MaintenanceItems.Any())
+        {
+            var templateIds = car.MaintenanceItems.Select(mi => mi.MaintenanceTemplateId).Distinct();
+            var templates = await _templateRepository.GetAllAsync(
+                filter: t => templateIds.Contains(t.Id));
+            var templateDict = templates.ToDictionary(t => t.Id);
+
+            foreach (var item in car.MaintenanceItems)
+            {
+                if (templateDict.TryGetValue(item.MaintenanceTemplateId, out var template))
+                {
+                    item.MaintenanceTemplate = template;
+                }
+            }
+        }
+
+        return MapCarToDashboardDto(car);
+    }
+
     /// <summary>
     /// Calculates the next service km or date based on interval type.
     /// </summary>
@@ -207,6 +233,86 @@ public class CarService : ICarService
                     LastServiceDate = mi.LastServiceDate,
                     CalculatedNextKm = mi.CalculatedNextKm,
                     CalculatedNextDate = mi.CalculatedNextDate
+                }).ToList()
+        };
+    }
+
+    /// <summary>
+    /// Maps Car entity to DashboardDto with calculated status for each maintenance item.
+    /// Filters out maintenance items with archived templates.
+    /// </summary>
+    private DashboardDto MapCarToDashboardDto(Car car)
+    {
+        var today = DateTime.UtcNow.Date;
+
+        return new DashboardDto
+        {
+            CarId = car.Id,
+            CarName = car.Name,
+            CurrentKm = car.CurrentKm,
+            MaintenanceItems = car.MaintenanceItems
+                .Where(mi => mi.MaintenanceTemplate != null && !mi.MaintenanceTemplate.Archived)
+                .Select(mi =>
+                {
+                    var dashboardItem = new DashboardMaintenanceItemDto
+                    {
+                        Id = mi.Id,
+                        TemplateName = mi.MaintenanceTemplate?.Name ?? string.Empty,
+                        IntervalType = mi.IntervalType,
+                        IntervalValue = mi.IntervalValue,
+                        LastServiceKm = mi.LastServiceKm,
+                        LastServiceDate = mi.LastServiceDate,
+                        CalculatedNextKm = mi.CalculatedNextKm,
+                        CalculatedNextDate = mi.CalculatedNextDate
+                    };
+
+                    // Calculate status based on interval type
+                    if (mi.IntervalType == "km" && mi.CalculatedNextKm.HasValue)
+                    {
+                        dashboardItem.KmUntilDue = mi.CalculatedNextKm.Value - car.CurrentKm;
+                        dashboardItem.DaysUntilDue = null;
+
+                        if (dashboardItem.KmUntilDue < 0)
+                        {
+                            dashboardItem.Status = "Overdue";
+                        }
+                        else if (dashboardItem.KmUntilDue <= 300)
+                        {
+                            dashboardItem.Status = "DueSoon";
+                        }
+                        else
+                        {
+                            dashboardItem.Status = "OK";
+                        }
+                    }
+                    else if (mi.IntervalType == "time" && mi.CalculatedNextDate.HasValue)
+                    {
+                        var daysUntilDue = (mi.CalculatedNextDate.Value.Date - today).TotalDays;
+                        dashboardItem.DaysUntilDue = (int)Math.Round(daysUntilDue);
+                        dashboardItem.KmUntilDue = null;
+
+                        if (dashboardItem.DaysUntilDue < 0)
+                        {
+                            dashboardItem.Status = "Overdue";
+                        }
+                        else if (dashboardItem.DaysUntilDue <= 30)
+                        {
+                            dashboardItem.Status = "DueSoon";
+                        }
+                        else
+                        {
+                            dashboardItem.Status = "OK";
+                        }
+                    }
+                    else
+                    {
+                        // If no calculated next service, status is unknown/OK
+                        dashboardItem.Status = "OK";
+                        dashboardItem.KmUntilDue = null;
+                        dashboardItem.DaysUntilDue = null;
+                    }
+
+                    return dashboardItem;
                 }).ToList()
         };
     }

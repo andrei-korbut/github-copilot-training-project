@@ -164,6 +164,60 @@ When a task is completed:
   - All acceptance criteria met
   - Build succeeds without warnings
   - Transaction atomicity verified (car + maintenance items created together or not at all)
+- ✅ **11 – GET Dashboard Data** (Completed: February 18, 2026)
+  - Implemented GET /api/dashboard/{carId} endpoint to retrieve dashboard data with calculated maintenance status
+  - Returns 200 OK with DashboardDto containing car details and maintenance items with status calculations
+  - Returns 404 Not Found when car doesn't exist
+  - Returns 500 Internal Server Error for unexpected errors
+  - Implemented across 3-layer architecture:
+    - Repository: Uses existing generic Repository<T> (no entity-specific repository needed)
+    - Service: GetDashboardDataAsync() retrieves car with maintenance items, loads templates efficiently, calculates status dynamically, maps to DashboardDto
+    - Controller: Created DashboardController with HttpGet endpoint, proper error handling and logging
+  - Created DTOs:
+    - DashboardDto with carId, carName, currentKm, and list of dashboard maintenance items
+    - DashboardMaintenanceItemDto with all maintenance item fields plus calculated status, kmUntilDue, daysUntilDue
+  - Status calculation logic implemented:
+    - **km-based items:** kmUntilDue = calculatedNextKm - currentKm
+      - Overdue: kmUntilDue < 0
+      - DueSoon: 0 <= kmUntilDue <= 300
+      - OK: kmUntilDue > 300
+    - **time-based items:** daysUntilDue = (calculatedNextDate - Today).TotalDays
+      - Overdue: daysUntilDue < 0
+      - DueSoon: 0 <= daysUntilDue <= 30
+      - OK: daysUntilDue > 30
+  - Filters out maintenance items with archived templates (same logic as GetAllCars and GetCarById)
+  - Tested successfully in docker-compose environment:
+    - ✅ Dashboard data returned with correct car details
+    - ✅ All maintenance items include calculated status fields
+    - ✅ Status "OK" calculated correctly:
+      - km-based: currentKm=50000, calculatedNextKm=55000 → kmUntilDue=5000, status="OK" ✓
+      - time-based: calculatedNextDate=2026-06-15 (117 days from now) → daysUntilDue=117, status="OK" ✓
+    - ✅ Status "DueSoon" calculated correctly:
+      - km-based: currentKm=49800, calculatedNextKm=50000 → kmUntilDue=200, status="DueSoon" ✓
+      - time-based: calculatedNextDate=2026-03-10 (20 days from now) → daysUntilDue=20, status="DueSoon" ✓
+    - ✅ Status "Overdue" calculated correctly:
+      - time-based: calculatedNextDate=2025-09-12 (159 days ago) → daysUntilDue=-159, status="Overdue" ✓
+    - ✅ 404 error returned for non-existent car ID
+    - ✅ Archived templates filtered out correctly
+    - ✅ No N+1 query issues - templates loaded efficiently in batch
+  - All acceptance criteria met:
+    - ✅ GET /api/dashboard/{carId} returns dashboard data
+    - ✅ Returns 200 OK with calculated status
+    - ✅ Returns 404 if car not found
+    - ✅ Status correctly calculated for km-based items (all 3 states tested)
+    - ✅ Status correctly calculated for time-based items (all 3 states tested)
+    - ✅ kmUntilDue / daysUntilDue calculated correctly
+    - ✅ Archived template items excluded
+    - ✅ No business logic in controller
+    - ✅ Repository pattern respected
+    - ✅ Build succeeds without warnings
+  - Architecture compliance:
+    - Service layer contains all business logic (status calculation)
+    - Controller only handles HTTP concerns
+    - Uses generic Repository<T> - no entity-specific repository needed
+    - Async/await throughout
+    - Proper error handling with specific status codes
+    - Logging for debugging and monitoring
 
 ### Frontend
 - ✅ **01 – Display Maintenance Templates** (Completed: February 18, 2026)
