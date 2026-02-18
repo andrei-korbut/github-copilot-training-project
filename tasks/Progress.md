@@ -60,6 +60,27 @@ When a task is completed:
     - Test project: `CarMaintenanceTracker.Api.Tests` using xUnit and Moq
     - All tests follow Arrange-Act-Assert pattern
     - Code coverage report generated
+- ✅ **03 – PUT Update Maintenance Template** (Completed: February 18, 2026)
+  - Implemented PUT /api/setup/{id} endpoint to update existing maintenance templates
+  - All fields can be updated: name, intervalType, intervalValue, archived status
+  - CreatedAt field is preserved during updates (not modified)
+  - Returns 200 OK with updated MaintenanceTemplateDto on success
+  - Returns 404 Not Found when template doesn't exist
+  - Returns 400 Bad Request for validation errors (missing required fields, invalid interval type)
+  - Implemented across 3-layer architecture:
+    - Repository: Uses existing generic Repository<T> methods (GetByIdAsync, UpdateAsync)
+    - Service: UpdateTemplateAsync checks existence, validates interval type, updates entity, maps to DTO
+    - Controller: HttpPut endpoint with path parameter {id}, ModelState validation, proper error handling
+  - Created UpdateMaintenanceTemplateDto with validation attributes
+  - Interval type validation enforced ("km" or "time" only)
+  - Tested successfully in docker-compose environment:
+    - ✅ Successful updates return 200 OK with updated data
+    - ✅ Non-existent templates return 404
+    - ✅ Invalid interval type returns 400
+    - ✅ Missing required fields return 400
+    - ✅ Archived status can be toggled via update
+    - ✅ CreatedAt timestamp preserved across updates
+  - Build succeeds without warnings
 
 ### Frontend
 - ✅ **01 – Display Maintenance Templates** (Completed: February 18, 2026)

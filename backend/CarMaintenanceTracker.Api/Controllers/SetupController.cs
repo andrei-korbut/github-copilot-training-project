@@ -60,4 +60,35 @@ public class SetupController : ControllerBase
             return StatusCode(500, new { error = "An error occurred while creating the maintenance template" });
         }
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateMaintenanceTemplate(int id, [FromBody] UpdateMaintenanceTemplateDto dto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var updatedTemplate = await _service.UpdateTemplateAsync(id, dto);
+
+            if (updatedTemplate == null)
+            {
+                return NotFound(new { error = $"Template with ID {id} not found" });
+            }
+
+            return Ok(updatedTemplate);
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Validation error while updating maintenance template");
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating maintenance template");
+            return StatusCode(500, new { error = "An error occurred while updating the maintenance template" });
+        }
+    }
 }

@@ -6,4 +6,5 @@ public interface IMaintenanceTemplateService
 {
     Task<List<MaintenanceTemplateDto>> GetAllTemplatesAsync();
     Task<MaintenanceTemplateDto> CreateTemplateAsync(CreateMaintenanceTemplateDto dto);
+    Task<MaintenanceTemplateDto?> UpdateTemplateAsync(int id, UpdateMaintenanceTemplateDto dto);
 }

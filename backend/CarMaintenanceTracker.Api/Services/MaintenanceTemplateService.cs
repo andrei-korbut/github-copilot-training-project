@@ -63,4 +63,40 @@ public class MaintenanceTemplateService : IMaintenanceTemplateService
             CreatedAt = createdTemplate.CreatedAt
         };
     }
+
+    public async Task<MaintenanceTemplateDto?> UpdateTemplateAsync(int id, UpdateMaintenanceTemplateDto dto)
+    {
+        // Check if template exists
+        var existingTemplate = await _repository.GetByIdAsync(id);
+        if (existingTemplate == null)
+        {
+            return null;
+        }
+
+        // Validate interval type
+        if (dto.IntervalType != "km" && dto.IntervalType != "time")
+        {
+            throw new ArgumentException("Interval type must be 'km' or 'time'");
+        }
+
+        // Update entity properties (preserve CreatedAt)
+        existingTemplate.Name = dto.Name;
+        existingTemplate.IntervalType = dto.IntervalType;
+        existingTemplate.IntervalValue = dto.IntervalValue;
+        existingTemplate.Archived = dto.Archived;
+
+        // Save to database
+        var updatedTemplate = await _repository.UpdateAsync(existingTemplate);
+
+        // Map Entity to Response DTO
+        return new MaintenanceTemplateDto
+        {
+            Id = updatedTemplate.Id,
+            Name = updatedTemplate.Name,
+            IntervalType = updatedTemplate.IntervalType,
+            IntervalValue = updatedTemplate.IntervalValue,
+            Archived = updatedTemplate.Archived,
+            CreatedAt = updatedTemplate.CreatedAt
+        };
+    }
 }
