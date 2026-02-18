@@ -14,7 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Register repositories
-builder.Services.AddScoped<IMaintenanceTemplateRepository, MaintenanceTemplateRepository>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Register services
 builder.Services.AddScoped<IMaintenanceTemplateService, MaintenanceTemplateService>();

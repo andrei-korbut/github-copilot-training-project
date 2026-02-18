@@ -6,11 +6,29 @@ namespace CarMaintenanceTracker.Api.Services;
 
 public class MaintenanceTemplateService : IMaintenanceTemplateService
 {
-    private readonly IMaintenanceTemplateRepository _repository;
+    private readonly IRepository<MaintenanceTemplate> _repository;
 
-    public MaintenanceTemplateService(IMaintenanceTemplateRepository repository)
+    public MaintenanceTemplateService(IRepository<MaintenanceTemplate> repository)
     {
         _repository = repository;
+    }
+
+    public async Task<List<MaintenanceTemplateDto>> GetAllTemplatesAsync()
+    {
+        var templates = await _repository.GetAllAsync(
+            filter: null,
+            orderBy: q => q.OrderByDescending(t => t.CreatedAt)
+        );
+        
+        return templates.Select(t => new MaintenanceTemplateDto
+        {
+            Id = t.Id,
+            Name = t.Name,
+            IntervalType = t.IntervalType,
+            IntervalValue = t.IntervalValue,
+            Archived = t.Archived,
+            CreatedAt = t.CreatedAt
+        }).ToList();
     }
 
     public async Task<MaintenanceTemplateDto> CreateTemplateAsync(CreateMaintenanceTemplateDto dto)

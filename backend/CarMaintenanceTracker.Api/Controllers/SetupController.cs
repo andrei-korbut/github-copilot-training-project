@@ -17,6 +17,21 @@ public class SetupController : ControllerBase
         _logger = logger;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAllMaintenanceTemplates()
+    {
+        try
+        {
+            var templates = await _service.GetAllTemplatesAsync();
+            return Ok(templates);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving maintenance templates");
+            return StatusCode(500, new { error = "An error occurred while retrieving maintenance templates" });
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateMaintenanceTemplate([FromBody] CreateMaintenanceTemplateDto dto)
     {

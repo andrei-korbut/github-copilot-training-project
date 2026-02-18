@@ -1,5 +1,6 @@
 using CarMaintenanceTracker.Api.Data;
 using CarMaintenanceTracker.Api.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarMaintenanceTracker.Api.Repositories;
 
@@ -13,6 +14,15 @@ public class MaintenanceTemplateRepository : Repository<MaintenanceTemplate>, IM
     {
     }
 
-    // Add specific methods for MaintenanceTemplate here if needed
-    // Base CRUD operations (GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync, DeleteAsync) inherited from Repository<T>
+    /// <summary>
+    /// Gets all maintenance templates sorted by creation date (newest first).
+    /// </summary>
+    /// <returns>Collection of maintenance templates ordered by CreatedAt descending</returns>
+    public override async Task<IEnumerable<MaintenanceTemplate>> GetAllAsync()
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .OrderByDescending(t => t.CreatedAt)
+            .ToListAsync();
+    }
 }

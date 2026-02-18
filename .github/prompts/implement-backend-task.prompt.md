@@ -15,6 +15,7 @@ The project follows a strict 3-Layer Architecture:
 
 You must follow this architecture strictly.
 Use all the modern best practices of C# Web API development.
+Unit tests are out of scope.
 
 ---
 
@@ -108,10 +109,6 @@ If entity changes are required:
 
 After implementation:
 
-- Write unit tests for:
-  - Service layer
-  - Business logic
-- Ensure all tests pass.
 - Validate:
   - Status codes
   - Validation behavior

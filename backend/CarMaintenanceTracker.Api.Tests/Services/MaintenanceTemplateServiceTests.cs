@@ -3,6 +3,7 @@ using CarMaintenanceTracker.Api.Entities;
 using CarMaintenanceTracker.Api.Repositories;
 using CarMaintenanceTracker.Api.Services;
 using Moq;
+using System.Linq.Expressions;
 
 namespace CarMaintenanceTracker.Api.Tests.Services;
 
@@ -12,7 +13,7 @@ public class MaintenanceTemplateServiceTests
     public async Task CreateTemplateAsync_ValidDto_ReturnsCreatedTemplate()
     {
         // Arrange
-        var mockRepo = new Mock<IMaintenanceTemplateRepository>();
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
         mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
@@ -39,7 +40,7 @@ public class MaintenanceTemplateServiceTests
     public async Task CreateTemplateAsync_ValidDto_SetsArchivedToFalse()
     {
         // Arrange
-        var mockRepo = new Mock<IMaintenanceTemplateRepository>();
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
         mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
@@ -62,7 +63,7 @@ public class MaintenanceTemplateServiceTests
     public async Task CreateTemplateAsync_ValidDto_SetsCreatedAtToUtcNow()
     {
         // Arrange
-        var mockRepo = new Mock<IMaintenanceTemplateRepository>();
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
         mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
@@ -87,7 +88,7 @@ public class MaintenanceTemplateServiceTests
     public async Task CreateTemplateAsync_IntervalTypeKm_CallsRepository()
     {
         // Arrange
-        var mockRepo = new Mock<IMaintenanceTemplateRepository>();
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
         mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
@@ -115,7 +116,7 @@ public class MaintenanceTemplateServiceTests
     public async Task CreateTemplateAsync_IntervalTypeTime_CallsRepository()
     {
         // Arrange
-        var mockRepo = new Mock<IMaintenanceTemplateRepository>();
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
         mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
         
@@ -142,7 +143,7 @@ public class MaintenanceTemplateServiceTests
     public async Task CreateTemplateAsync_InvalidIntervalType_ThrowsArgumentException()
     {
         // Arrange
-        var mockRepo = new Mock<IMaintenanceTemplateRepository>();
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
         var service = new MaintenanceTemplateService(mockRepo.Object);
         var dto = new CreateMaintenanceTemplateDto
         {
@@ -163,7 +164,7 @@ public class MaintenanceTemplateServiceTests
     {
         // Arrange
         MaintenanceTemplate? capturedEntity = null;
-        var mockRepo = new Mock<IMaintenanceTemplateRepository>();
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
         mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .Callback<MaintenanceTemplate>(t => capturedEntity = t)
             .ReturnsAsync((MaintenanceTemplate t) => { t.Id = 1; return t; });
@@ -192,7 +193,7 @@ public class MaintenanceTemplateServiceTests
     public async Task CreateTemplateAsync_ValidDto_MapsEntityToResponseDto()
     {
         // Arrange
-        var mockRepo = new Mock<IMaintenanceTemplateRepository>();
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
         mockRepo.Setup(r => r.AddAsync(It.IsAny<MaintenanceTemplate>()))
             .ReturnsAsync((MaintenanceTemplate t) => 
             { 
@@ -219,5 +220,97 @@ public class MaintenanceTemplateServiceTests
         Assert.Equal(10000, result.IntervalValue);
         Assert.False(result.Archived);
         Assert.Equal(new DateTime(2026, 2, 18, 10, 30, 0, DateTimeKind.Utc), result.CreatedAt);
+    }
+
+    [Fact]
+    public async Task GetAllTemplatesAsync_WithMultipleTemplates_ReturnsAllAsDtos()
+    {
+        // Arrange
+        var templates = new List<MaintenanceTemplate>
+        {
+            new MaintenanceTemplate
+            {
+                Id = 1,
+                Name = "Oil Change",
+                IntervalType = "km",
+                IntervalValue = 10000,
+                Archived = false,
+                CreatedAt = new DateTime(2026, 2, 1, 10, 0, 0, DateTimeKind.Utc)
+            },
+            new MaintenanceTemplate
+            {
+                Id = 2,
+                Name = "Air Filter",
+                IntervalType = "time",
+                IntervalValue = 365,
+                Archived = true,
+                CreatedAt = new DateTime(2026, 1, 15, 10, 0, 0, DateTimeKind.Utc)
+            }
+        };
+
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
+        mockRepo.Setup(r => r.GetAllAsync(
+            It.IsAny<Expression<Func<MaintenanceTemplate, bool>>>(),
+            It.IsAny<Func<IQueryable<MaintenanceTemplate>, IOrderedQueryable<MaintenanceTemplate>>>()))
+            .ReturnsAsync(templates);
+        
+        var service = new MaintenanceTemplateService(mockRepo.Object);
+
+        // Act
+        var result = await service.GetAllTemplatesAsync();
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count);
+        Assert.Equal(1, result[0].Id);
+        Assert.Equal("Oil Change", result[0].Name);
+        Assert.Equal("km", result[0].IntervalType);
+        Assert.Equal(10000, result[0].IntervalValue);
+        Assert.False(result[0].Archived);
+        Assert.Equal(2, result[1].Id);
+        Assert.Equal("Air Filter", result[1].Name);
+        Assert.True(result[1].Archived);
+    }
+
+    [Fact]
+    public async Task GetAllTemplatesAsync_EmptyRepository_ReturnsEmptyList()
+    {
+        // Arrange
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
+        mockRepo.Setup(r => r.GetAllAsync(
+            It.IsAny<Expression<Func<MaintenanceTemplate, bool>>>(),
+            It.IsAny<Func<IQueryable<MaintenanceTemplate>, IOrderedQueryable<MaintenanceTemplate>>>()))
+            .ReturnsAsync(new List<MaintenanceTemplate>());
+        
+        var service = new MaintenanceTemplateService(mockRepo.Object);
+
+        // Act
+        var result = await service.GetAllTemplatesAsync();
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetAllTemplatesAsync_CallsRepositoryGetAllAsync()
+    {
+        // Arrange
+        var mockRepo = new Mock<IRepository<MaintenanceTemplate>>();
+        mockRepo.Setup(r => r.GetAllAsync(
+            It.IsAny<Expression<Func<MaintenanceTemplate, bool>>>(),
+            It.IsAny<Func<IQueryable<MaintenanceTemplate>, IOrderedQueryable<MaintenanceTemplate>>>()))
+            .ReturnsAsync(new List<MaintenanceTemplate>());
+        
+        var service = new MaintenanceTemplateService(mockRepo.Object);
+
+        // Act
+        await service.GetAllTemplatesAsync();
+
+        // Assert
+        mockRepo.Verify(r => r.GetAllAsync(
+            It.IsAny<Expression<Func<MaintenanceTemplate, bool>>>(),
+            It.IsAny<Func<IQueryable<MaintenanceTemplate>, IOrderedQueryable<MaintenanceTemplate>>>()), 
+            Times.Once);
     }
 }

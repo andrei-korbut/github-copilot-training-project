@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using CarMaintenanceTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,19 +20,33 @@ public class Repository<T> : IRepository<T> where T : class
     }
 
     /// <inheritdoc/>
-    public virtual async Task<T?> GetByIdAsync(int id)
+    public async Task<T?> GetByIdAsync(int id)
     {
         return await _dbSet.FindAsync(id);
     }
 
     /// <inheritdoc/>
-    public virtual async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync(
+        Expression<Func<T, bool>>? filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
     {
-        return await _dbSet.AsNoTracking().ToListAsync();
+        IQueryable<T> query = _dbSet.AsNoTracking();
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        if (orderBy != null)
+        {
+            return await orderBy(query).ToListAsync();
+        }
+
+        return await query.ToListAsync();
     }
 
     /// <inheritdoc/>
-    public virtual async Task<T> AddAsync(T entity)
+    public async Task<T> AddAsync(T entity)
     {
         _dbSet.Add(entity);
         await _context.SaveChangesAsync();
@@ -39,7 +54,7 @@ public class Repository<T> : IRepository<T> where T : class
     }
 
     /// <inheritdoc/>
-    public virtual async Task<T> UpdateAsync(T entity)
+    public async Task<T> UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
         await _context.SaveChangesAsync();
@@ -47,7 +62,7 @@ public class Repository<T> : IRepository<T> where T : class
     }
 
     /// <inheritdoc/>
-    public virtual async Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var entity = await GetByIdAsync(id);
         if (entity != null)

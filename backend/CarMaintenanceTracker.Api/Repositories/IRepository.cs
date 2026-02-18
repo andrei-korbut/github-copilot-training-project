@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace CarMaintenanceTracker.Api.Repositories;
 
 /// <summary>
@@ -14,10 +16,14 @@ public interface IRepository<T> where T : class
     Task<T?> GetByIdAsync(int id);
 
     /// <summary>
-    /// Retrieves all entities.
+    /// Retrieves all entities with optional filtering and ordering.
     /// </summary>
-    /// <returns>Collection of all entities</returns>
-    Task<IEnumerable<T>> GetAllAsync();
+    /// <param name="filter">Optional filter expression</param>
+    /// <param name="orderBy">Optional ordering function</param>
+    /// <returns>Collection of entities matching the criteria</returns>
+    Task<IEnumerable<T>> GetAllAsync(
+        Expression<Func<T, bool>>? filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
 
     /// <summary>
     /// Adds a new entity to the database.

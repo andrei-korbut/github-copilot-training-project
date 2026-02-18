@@ -276,4 +276,130 @@ public class SetupControllerTests
         Assert.True(modelState.ContainsKey("Name"));
         Assert.True(modelState.ContainsKey("IntervalType"));
     }
+
+    [Fact]
+    public async Task GetAllMaintenanceTemplates_ValidRequest_Returns200Ok()
+    {
+        // Arrange
+        var mockService = new Mock<IMaintenanceTemplateService>();
+        var mockLogger = new Mock<ILogger<SetupController>>();
+        var templates = new List<MaintenanceTemplateDto>
+        {
+            new MaintenanceTemplateDto
+            {
+                Id = 1,
+                Name = "Oil Change",
+                IntervalType = "km",
+                IntervalValue = 10000,
+                Archived = false,
+                CreatedAt = DateTime.UtcNow
+            },
+            new MaintenanceTemplateDto
+            {
+                Id = 2,
+                Name = "Air Filter",
+                IntervalType = "time",
+                IntervalValue = 365,
+                Archived = true,
+                CreatedAt = DateTime.UtcNow
+            }
+        };
+        mockService.Setup(s => s.GetAllTemplatesAsync()).ReturnsAsync(templates);
+        
+        var controller = new SetupController(mockService.Object, mockLogger.Object);
+
+        // Act
+        var result = await controller.GetAllMaintenanceTemplates();
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(200, okResult.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetAllMaintenanceTemplates_ValidRequest_ReturnsListOfTemplates()
+    {
+        // Arrange
+        var mockService = new Mock<IMaintenanceTemplateService>();
+        var mockLogger = new Mock<ILogger<SetupController>>();
+        var templates = new List<MaintenanceTemplateDto>
+        {
+            new MaintenanceTemplateDto
+            {
+                Id = 1,
+                Name = "Oil Change",
+                IntervalType = "km",
+                IntervalValue = 10000,
+                Archived = false,
+                CreatedAt = DateTime.UtcNow
+            }
+        };
+        mockService.Setup(s => s.GetAllTemplatesAsync()).ReturnsAsync(templates);
+        
+        var controller = new SetupController(mockService.Object, mockLogger.Object);
+
+        // Act
+        var result = await controller.GetAllMaintenanceTemplates();
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedTemplates = Assert.IsAssignableFrom<List<MaintenanceTemplateDto>>(okResult.Value);
+        Assert.Single(returnedTemplates);
+        Assert.Equal("Oil Change", returnedTemplates[0].Name);
+    }
+
+    [Fact]
+    public async Task GetAllMaintenanceTemplates_EmptyList_Returns200OkWithEmptyArray()
+    {
+        // Arrange
+        var mockService = new Mock<IMaintenanceTemplateService>();
+        var mockLogger = new Mock<ILogger<SetupController>>();
+        mockService.Setup(s => s.GetAllTemplatesAsync()).ReturnsAsync(new List<MaintenanceTemplateDto>());
+        
+        var controller = new SetupController(mockService.Object, mockLogger.Object);
+
+        // Act
+        var result = await controller.GetAllMaintenanceTemplates();
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(200, okResult.StatusCode);
+        var returnedTemplates = Assert.IsAssignableFrom<List<MaintenanceTemplateDto>>(okResult.Value);
+        Assert.Empty(returnedTemplates);
+    }
+
+    [Fact]
+    public async Task GetAllMaintenanceTemplates_ServiceThrowsException_Returns500InternalServerError()
+    {
+        // Arrange
+        var mockService = new Mock<IMaintenanceTemplateService>();
+        var mockLogger = new Mock<ILogger<SetupController>>();
+        mockService.Setup(s => s.GetAllTemplatesAsync()).ThrowsAsync(new Exception("Database error"));
+        
+        var controller = new SetupController(mockService.Object, mockLogger.Object);
+
+        // Act
+        var result = await controller.GetAllMaintenanceTemplates();
+
+        // Assert
+        var statusCodeResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(500, statusCodeResult.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetAllMaintenanceTemplates_CallsServiceGetAllTemplatesAsync()
+    {
+        // Arrange
+        var mockService = new Mock<IMaintenanceTemplateService>();
+        var mockLogger = new Mock<ILogger<SetupController>>();
+        mockService.Setup(s => s.GetAllTemplatesAsync()).ReturnsAsync(new List<MaintenanceTemplateDto>());
+        
+        var controller = new SetupController(mockService.Object, mockLogger.Object);
+
+        // Act
+        await controller.GetAllMaintenanceTemplates();
+
+        // Assert
+        mockService.Verify(s => s.GetAllTemplatesAsync(), Times.Once);
+    }
 }
