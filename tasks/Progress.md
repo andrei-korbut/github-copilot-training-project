@@ -218,6 +218,78 @@ When a task is completed:
     - Async/await throughout
     - Proper error handling with specific status codes
     - Logging for debugging and monitoring
+- ✅ **10 – POST Track Maintenance Change** (Completed: February 18, 2026)
+  - Implemented POST /api/trackchange/{carMaintenanceItemId} endpoint to record maintenance service for a specific car maintenance item
+  - Returns 201 Created with TrackChangeDto and Location header
+  - Returns 404 Not Found when maintenance item doesn't exist
+  - Returns 400 Bad Request for validation errors (missing required fields, archived template, future date)
+  - Returns 500 Internal Server Error for unexpected errors
+  - Implemented across 3-layer architecture:
+    - Repository: Uses generic Repository<T> for TrackChange, CarMaintenanceItem, and MaintenanceTemplate (no entity-specific repository needed)
+    - Service: TrackChangeAsync() validates maintenance item and template, creates TrackChange record, updates CarMaintenanceItem, recalculates next service values
+    - Controller: Created TrackChangeController with HttpPost endpoint, proper error handling and logging
+  - Created TrackChange entity:
+    - Properties: Id (PK), CarMaintenanceItemId (FK), Km (nullable), Date (nullable)
+    - Foreign key to CarMaintenanceItem with CASCADE delete
+    - Table: TrackChanges
+  - Created DTOs:
+    - CreateTrackChangeDto with optional Km and Date fields
+    - TrackChangeDto with all TrackChange data for response
+  - Business logic implemented:
+    - Validates CarMaintenanceItem exists → throws KeyNotFoundException (404)
+    - Validates MaintenanceTemplate is not archived → throws ArgumentException (400) with message "Cannot track changes for archived maintenance templates"
+    - For km-based items:
+      - Validates Km is provided and >= 0
+      - Updates lastServiceKm with provided km
+      - Recalculates: calculatedNextKm = lastServiceKm + intervalValue
+    - For time-based items:
+      - Validates Date is provided and not in future
+      - Updates lastServiceDate with provided date
+      - Recalculates: calculatedNextDate = lastServiceDate + intervalValue days
+    - Transaction handling: TrackChange creation and CarMaintenanceItem update in atomic operation
+  - Database:
+    - Updated AppDbContext with TrackChanges DbSet
+    - Configured TrackChange entity relationships in OnModelCreating
+    - Created and applied migration: AddTrackChangeEntity
+    - Foreign key: CarMaintenanceItemId (CASCADE delete)
+  - Registered ITrackChangeService in Program.cs
+  - Tested successfully in docker-compose environment:
+    - ✅ Time-based maintenance item: POST with date creates TrackChange and updates maintenance item
+      - lastServiceDate updated from "2025-03-10T00:00:00" to "2026-02-16T10:00:00"
+      - calculatedNextDate recalculated to "2027-02-16T10:00:00" (365 days after last service)
+      - Returns 201 Created with TrackChange data (id: 2, carMaintenanceItemId: 2003, date: "2026-02-16T10:00:00", km: null)
+    - ✅ Km-based maintenance item: POST with km creates TrackChange and updates maintenance item
+      - lastServiceKm updated from 40000 to 52000
+      - calculatedNextKm recalculated to 62000 (52000 + 10000)
+      - Returns 201 Created with TrackChange data (id: 3, carMaintenanceItemId: 2002, km: 52000, date: null)
+    - ✅ 404 error returned for non-existent maintenance item ID (99999)
+    - ✅ 400 error with message "Km is required for km-based maintenance items" when km missing for km-based item
+    - ✅ 400 error with message "Date is required for time-based maintenance items" when date missing for time-based item
+    - ✅ 400 error with message "Cannot track changes for archived maintenance templates" when template is archived
+    - ✅ 400 error with message "Date cannot be in the future" when date is in future
+    - ✅ Transaction atomicity verified (both TrackChange and CarMaintenanceItem updated together)
+    - ✅ Location header included in 201 response
+  - All acceptance criteria met:
+    - ✅ POST /api/trackchange/{carMaintenanceItemId} creates TrackChange record
+    - ✅ Returns 201 Created with Location header
+    - ✅ TrackChange record created in database
+    - ✅ CarMaintenanceItem lastServiceKm/Date updated correctly
+    - ✅ Next service km/date recalculated correctly based on interval type
+    - ✅ Returns 404 if maintenance item not found
+    - ✅ Returns 400 for all validation errors (missing required fields, archived template, future date)
+    - ✅ Transaction ensures atomicity (create TrackChange + update CarMaintenanceItem)
+    - ✅ No business logic in controller
+    - ✅ Repository pattern respected (generic Repository<T> used)
+    - ✅ Build succeeds without warnings
+  - Architecture compliance:
+    - Service layer contains all business logic (validation, recalculation)
+    - Controller only handles HTTP concerns
+    - Uses generic Repository<T> - no entity-specific repository needed
+    - Async/await throughout
+    - Proper error handling with specific status codes (201, 400, 404, 500)
+    - Logging for debugging and monitoring
+    - Transaction handling in repository layer (SaveChangesAsync)
+    - DTOs for input/output separation
 
 ### Frontend
 - ✅ **01 – Display Maintenance Templates** (Completed: February 18, 2026)

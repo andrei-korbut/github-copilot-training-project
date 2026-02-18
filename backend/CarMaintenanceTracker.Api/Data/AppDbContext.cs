@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public virtual DbSet<MaintenanceTemplate> MaintenanceTemplates { get; set; }
     public virtual DbSet<Car> Cars { get; set; }
     public virtual DbSet<CarMaintenanceItem> CarMaintenanceItems { get; set; }
+    public virtual DbSet<TrackChange> TrackChanges { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -67,6 +68,21 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.MaintenanceTemplateId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configure TrackChange entity
+        modelBuilder.Entity<TrackChange>(entity =>
+        {
+            entity.ToTable("TrackChanges");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CarMaintenanceItemId).IsRequired();
+            entity.Property(e => e.Km).IsRequired(false);
+            entity.Property(e => e.Date).IsRequired(false);
+
+            entity.HasOne(e => e.CarMaintenanceItem)
+                .WithMany()
+                .HasForeignKey(e => e.CarMaintenanceItemId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
