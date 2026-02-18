@@ -81,6 +81,40 @@ When a task is completed:
     - ✅ Archived status can be toggled via update
     - ✅ CreatedAt timestamp preserved across updates
   - Build succeeds without warnings
+- ✅ **06 – GET Cars List** (Completed: February 18, 2026)
+  - Implemented GET /api/cars endpoint to retrieve all cars with their maintenance items
+  - Returns all cars sorted by CreatedAt descending (newest first)
+  - Filters out maintenance items where the associated template is archived
+  - Returns 200 OK with array of CarDto (or empty array if no cars exist)
+  - Returns 500 Internal Server Error for unexpected errors
+  - Implemented across 3-layer architecture:
+    - Repository: Uses existing generic Repository<T> with expression-based filtering and ordering
+    - Service: GetAllCarsAsync() retrieves cars with maintenance items, loads templates efficiently, filters archived templates, maps to DTOs
+    - Controller: HttpGet endpoint with proper error handling and logging
+  - Used existing DTOs: CarDto, CarMaintenanceItemDto (created in Task #07)
+  - Architecture notes:
+    - No entity-specific repository needed - leverages modern generic Repository<T> pattern
+    - Service layer loads templates in batch queries to avoid N+1 issues
+    - Filtering logic in MapCarToDto method: `.Where(mi => mi.MaintenanceTemplate != null && !mi.MaintenanceTemplate.Archived)`
+    - Same filtering applies to both GET /api/cars and GET /api/cars/{id} endpoints
+  - Tested successfully in docker-compose environment:
+    - ✅ Returns all cars with maintenance items sorted by CreatedAt descending
+    - ✅ Empty array returned when no cars exist
+    - ✅ Maintenance items with archived templates are filtered out
+    - ✅ Maintenance items include all required template details (name, interval type, value)
+    - ✅ Next service calculations correct (km and date based)
+    - ✅ GET /api/cars/{id} also filters archived templates correctly
+    - ✅ No N+1 query issues - templates loaded efficiently in batch
+  - All acceptance criteria met:
+    - ✅ GET /api/cars returns all cars with maintenance items
+    - ✅ Cars sorted newest first
+    - ✅ Empty array returned when no data
+    - ✅ Maintenance items include template details
+    - ✅ Archived template items excluded
+    - ✅ Returns 200 OK always
+    - ✅ No business logic in controller
+    - ✅ Repository pattern respected
+  - Build succeeds without warnings
 - ✅ **07 – POST Create Car** (Completed: February 18, 2026)
   - Implemented POST /api/cars endpoint to create new cars with associated maintenance items
   - Created Car and CarMaintenanceItem entities with proper relationships

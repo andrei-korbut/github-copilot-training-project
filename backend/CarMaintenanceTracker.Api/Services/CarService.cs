@@ -184,6 +184,7 @@ public class CarService : ICarService
 
     /// <summary>
     /// Maps Car entity to CarDto.
+    /// Filters out maintenance items with archived templates.
     /// </summary>
     private CarDto MapCarToDto(Car car)
     {
@@ -193,18 +194,20 @@ public class CarService : ICarService
             Name = car.Name,
             CurrentKm = car.CurrentKm,
             CreatedAt = car.CreatedAt,
-            MaintenanceItems = car.MaintenanceItems.Select(mi => new CarMaintenanceItemDto
-            {
-                Id = mi.Id,
-                MaintenanceTemplateId = mi.MaintenanceTemplateId,
-                TemplateName = mi.MaintenanceTemplate?.Name ?? string.Empty,
-                IntervalType = mi.IntervalType,
-                IntervalValue = mi.IntervalValue,
-                LastServiceKm = mi.LastServiceKm,
-                LastServiceDate = mi.LastServiceDate,
-                CalculatedNextKm = mi.CalculatedNextKm,
-                CalculatedNextDate = mi.CalculatedNextDate
-            }).ToList()
+            MaintenanceItems = car.MaintenanceItems
+                .Where(mi => mi.MaintenanceTemplate != null && !mi.MaintenanceTemplate.Archived)
+                .Select(mi => new CarMaintenanceItemDto
+                {
+                    Id = mi.Id,
+                    MaintenanceTemplateId = mi.MaintenanceTemplateId,
+                    TemplateName = mi.MaintenanceTemplate?.Name ?? string.Empty,
+                    IntervalType = mi.IntervalType,
+                    IntervalValue = mi.IntervalValue,
+                    LastServiceKm = mi.LastServiceKm,
+                    LastServiceDate = mi.LastServiceDate,
+                    CalculatedNextKm = mi.CalculatedNextKm,
+                    CalculatedNextDate = mi.CalculatedNextDate
+                }).ToList()
         };
     }
 }
