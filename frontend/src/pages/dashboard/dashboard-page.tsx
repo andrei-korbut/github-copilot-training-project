@@ -1,5 +1,5 @@
-import React from 'react';
-import { Container } from '../../components/ui';
+import React, { useState, useEffect } from 'react';
+import { Container, Alert } from '../../components/ui';
 import { LoadingSpinner, EmptyState } from '../../components/feedback';
 import { useFetchCars } from '../../features/cars/hooks';
 import { useFetchDashboard, useCarSelector } from '../../features/dashboard/hooks';
@@ -11,6 +11,8 @@ import {
 import type { DashboardMaintenanceItem } from '../../types/dashboard';
 
 const DashboardPage: React.FC = () => {
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+
   // Fetch all cars for dropdown
   const { cars, isLoading: isLoadingCars, error: carsError } = useFetchCars();
 
@@ -18,7 +20,22 @@ const DashboardPage: React.FC = () => {
   const { selectedCarId, setSelectedCarId } = useCarSelector(cars);
 
   // Fetch dashboard data for selected car
-  const { dashboard, isLoading: isLoadingDashboard, error: dashboardError } = useFetchDashboard(selectedCarId);
+  const { dashboard, isLoading: isLoadingDashboard, error: dashboardError, refetch } = useFetchDashboard(selectedCarId);
+
+  // Auto-dismiss success notification after 3 seconds
+  useEffect(() => {
+    if (showSuccessNotification) {
+      const timer = setTimeout(() => {
+        setShowSuccessNotification(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessNotification]);
+
+  const handleMileageUpdated = () => {
+    setShowSuccessNotification(true);
+    refetch();
+  };
 
   // Group maintenance items by status
   const overdueItems: DashboardMaintenanceItem[] = dashboard?.maintenanceItems.filter(
@@ -62,6 +79,13 @@ const DashboardPage: React.FC = () => {
         {/* Dashboard Content */}
         {!isLoadingCars && !carsError && cars.length > 0 && (
           <>
+            {/* Success Notification */}
+            {showSuccessNotification && (
+              <Alert variant="success" className="mb-6">
+                Mileage updated successfully
+              </Alert>
+            )}
+
             {/* Car Selector */}
             <div className="mb-8 max-w-md">
               <CarSelector
@@ -92,8 +116,10 @@ const DashboardPage: React.FC = () => {
               <>
                 {/* Dashboard Header */}
                 <DashboardHeader
+                  carId={selectedCarId}
                   carName={dashboard.carName}
                   currentKm={dashboard.currentKm}
+                  onMileageUpdated={handleMileageUpdated}
                 />
 
                 {/* Maintenance Groups */}

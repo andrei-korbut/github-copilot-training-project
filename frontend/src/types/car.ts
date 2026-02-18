@@ -32,3 +32,7 @@ export interface CreateCarMaintenanceItemDto {
   lastServiceKm?: number;
   lastServiceDate?: string;
 }
+
+export interface UpdateCarMileageDto {
+  currentKm: number;
+}

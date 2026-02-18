@@ -643,3 +643,119 @@ When a task is completed:
     - No business logic in page components (status grouping in page, but simple filtering)
     - Follows established patterns from cars and templates features
     - Proper async/await error handling throughout
+- ✅ **10 – Update Current Mileage Inline (Dashboard)** (Completed: February 18, 2026)
+  - Implemented inline mileage editing on Dashboard page
+  - Created comprehensive inline editing feature following feature-based architecture:
+    - **Types & API Layer:**
+      - Added `UpdateCarMileageDto` interface in `src/types/car.ts`
+      - Added `updateCarMileage()` function in `src/features/cars/api/cars-api.ts`
+      - Updated `api-client.ts` to handle 204 No Content responses properly
+    - **Custom Hooks:**
+      - Created `useUpdateMileage` hook in `src/features/dashboard/hooks/` for inline editing state management
+      - Manages isEditing, editValue, isLoading, and error states
+      - Handles validation (>= 0, integer, required)
+      - Provides startEditing, cancelEditing, handleSave, handleKeyDown functions
+      - Calls API with proper error handling (400, 404, 500)
+    - **Updated Components:**
+      - Updated `DashboardHeader` component with inline editing UI
+        - Display mode: Shows formatted mileage with blue pencil/edit icon
+        - Edit mode: Shows input field with save (green checkmark) and cancel (X) buttons
+        - Displays validation errors in red below input
+        - Loading spinner during save operation
+        - Keyboard shortcuts hint text
+      - Updated `DashboardPage` to handle mileage updates:
+        - Added success notification "Mileage updated successfully" (auto-dismisses after 3 seconds)
+        - Passes carId and onMileageUpdated callback to DashboardHeader
+        - Calls refetch() to refresh dashboard data after successful update
+  - Inline editing features implemented:
+    - Click on mileage or edit icon to enter edit mode
+    - Input field pre-filled with current value (autofocus)
+    - Save button (green with checkmark icon) updates mileage
+    - Cancel button (gray with X icon) reverts to original value
+    - Loading state: spinner replaces save icon, buttons disabled during API call
+    - Smooth transitions between display and edit modes
+    - Clear visual indication of editable field (blue edit icon with hover effect)
+  - Validation rules enforced (frontend):
+    - Mileage required → "Mileage is obligatory field"
+    - Must be valid number → "Mileage must be a valid number"
+    - Must be integer → "Mileage must be an integer"
+    - Must be >= 0 → "Mileage must be greater than or equal to 0"
+    - Error messages display in red below input field
+  - Keyboard shortcuts implemented:
+    - Esc key cancels editing and reverts changes
+    - Enter key validates and saves changes
+    - Help text displayed: "Press Enter to save, Esc to cancel"
+  - Error handling implemented:
+    - 400 Bad Request → displays backend validation message or "Invalid mileage value"
+    - 404 Not Found → "Car not found"
+    - 500 Server Error → "Failed to update mileage. Please try again."
+    - Network errors → "Network error. Please try again."
+    - Errors display in red below input field
+  - Success flow:
+    - API returns 204 No Content
+    - Edit mode exits automatically
+    - Success notification appears at top of dashboard (green alert)
+    - Dashboard data refreshes automatically (status calculations update)
+    - Notification auto-dismisses after 3 seconds
+  - All acceptance criteria met:
+    - ✅ Current mileage is editable inline
+    - ✅ Edit mode activates on click
+    - ✅ Input field pre-filled with current value
+    - ✅ Validation works (km >= 0, integer, required)
+    - ✅ PATCH request updates mileage successfully
+    - ✅ Dashboard data refreshes after update
+    - ✅ Status calculations update (items may move between groups)
+    - ✅ Success notification shown
+    - ✅ Cancel reverts to original value
+    - ✅ Error handling works (400, 404, 500)
+    - ✅ Keyboard shortcuts work (Esc, Enter)
+    - ✅ No console errors
+    - ✅ No TypeScript errors
+  - Tested successfully in dockerized environment (frontend + backend + database):
+    - **Backend API Testing:**
+      - ✅ PATCH /api/cars/{id}/km returns 204 No Content
+      - ✅ Mileage updated successfully (50000 → 52000)
+      - ✅ Dashboard endpoint reflects updated mileage immediately
+      - ✅ Validation: negative values return 400 Bad Request
+      - ✅ Error handling: non-existent car (ID 99999) returns 404 Not Found
+    - **Frontend UI Testing:**
+      - ✅ Display mode shows formatted mileage (e.g., "52,000 km") with edit icon
+      - ✅ Hover effect on edit icon works correctly
+      - ✅ Clicking edit icon activates inline editing mode
+      - ✅ Input field appears with current value pre-filled and autofocused
+      - ✅ Save and Cancel buttons clearly visible
+      - ✅ Typing in input field updates editValue state
+      - ✅ Save button validates input before API call
+      - ✅ Loading spinner displays during API call (replaces save icon)
+      - ✅ Buttons disabled during save operation
+      - ✅ Success notification appears after successful save
+      - ✅ Dashboard data refreshes automatically after save
+      - ✅ Status calculations recalculated (maintenance items may change groups)
+      - ✅ Success notification auto-dismisses after 3 seconds
+      - ✅ Cancel button reverts to original value without API call
+      - ✅ Returns to display mode after save or cancel
+      - ✅ Validation errors display correctly:
+        - Empty value → "Mileage is obligatory field"
+        - Negative value → "Mileage must be greater than or equal to 0"
+        - Non-integer → "Mileage must be an integer"
+        - Non-numeric → "Mileage must be a valid number"
+      - ✅ Keyboard shortcuts work:
+        - Esc key cancels editing
+        - Enter key validates and saves
+      - ✅ Help text displayed below input
+      - ✅ Smooth transitions between display and edit modes
+      - ✅ API error handling tested (displays appropriate error messages)
+      - ✅ No console errors
+      - ✅ TypeScript compilation successful
+  - Architecture compliance:
+    - Feature-based structure maintained (dashboard hooks, cars API)
+    - Separation of concerns (useUpdateMileage hook for logic, DashboardHeader for UI)
+    - Page component handles orchestration (notifications, refresh)
+    - Reusable UI components leveraged (Alert for notifications)
+    - Type safety with strict TypeScript (UpdateCarMileageDto interface)
+    - Consistent styling with Tailwind CSS (inline form, buttons, transitions)
+    - No business logic in components (all in useUpdateMileage hook)
+    - Follows established patterns from other features
+    - Proper error handling with user-friendly messages
+    - API client updated to handle 204 No Content responses (undefined as T)
+    - Loading states and disabled states properly managed
