@@ -423,3 +423,110 @@ When a task is completed:
     - Consistent styling with Tailwind CSS
     - No business logic in page components (logic in hooks)
     - Follows same patterns as templates feature
+- ✅ **09 – Display Dashboard with Car Selector** (Completed: February 18, 2026)
+  - Implemented GET /api/dashboard/{carId} endpoint integration with car selector dropdown
+  - Created comprehensive dashboard feature following feature-based architecture:
+    - **Types & API Layer:**
+      - `src/types/dashboard.ts` - Dashboard and DashboardMaintenanceItem type definitions with status calculations
+      - `src/features/dashboard/api/dashboard-api.ts` - getDashboardData() API function
+      - Updated `src/constants/api-endpoints.ts` with DASHBOARD endpoint
+    - **Custom Hooks:**
+      - `useFetchDashboard` hook for fetching dashboard data with loading/error states
+      - `useCarSelector` hook for managing car selection (auto-selects first car on load)
+    - **Feature Components:**
+      - `CarSelector` component - Dropdown for car selection using existing Select UI component
+      - `DashboardHeader` component - Displays car name and current mileage (formatted with thousand separators)
+      - `MaintenanceGroup` component - Status group container with color-coded sections (red/yellow/green)
+      - `MaintenanceItemCard` component - Individual maintenance item card with all details
+  - Created DashboardPage (`src/pages/dashboard/dashboard-page.tsx`):
+    - Fetches all cars for dropdown selector on page load
+    - Auto-selects first car by default
+    - Fetches dashboard data when car is selected
+    - Groups maintenance items by status (Overdue, DueSoon, OK)
+    - Displays three color-coded sections with status icons (🔴, 🟡, 🟢)
+    - Each section shows empty state when no items in that category
+    - Loading states during cars fetch and dashboard data fetch
+    - Error notifications for both cars and dashboard API failures
+    - No cars state with message: "No cars available. Add a car first."
+  - Updated router (`src/app/router.tsx`) to add /dashboard route
+  - Maintenance item cards display all required information:
+    - Template name (bold heading)
+    - Interval info (e.g., "Every 10,000 km" or "Every 365 days")
+    - Last service (km or date formatted)
+    - Next due (km or date formatted)
+    - Until due text (e.g., "5,000 km remaining" or "20 days remaining" or "159 days overdue")
+    - Track Change button (placeholder for future task)
+  - Status grouping logic:
+    - **Overdue Section (Red):** Items with status "Overdue" (negative kmUntilDue or daysUntilDue)
+    - **Due Soon Section (Yellow):** Items with status "DueSoon" (0-300 km or 0-30 days)
+    - **OK Section (Green):** Items with status "OK" (> 300 km or > 30 days)
+  - Features implemented:
+    - Car selector prominently placed at top with label
+    - Car selector disabled during dashboard data fetch
+    - Dashboard header shows car name and formatted mileage
+    - Color-coded section backgrounds and borders (red-50/300, yellow-50/300, green-50/300)
+    - Status icons for visual distinction (🔴, 🟡, 🟢)
+    - Responsive grid layout for maintenance items (1/2/3 columns)
+    - Empty state for each section: "No items in this category"
+    - Loading spinner centered during fetch operations
+    - Error notifications with clear messages
+    - Car selection triggers automatic data refresh
+  - All acceptance criteria met:
+    - ✅ Dashboard page loads correctly at /dashboard
+    - ✅ Car selector displays all cars from backend
+    - ✅ Default car selected on load (first car)
+    - ✅ Dashboard data fetched for selected car
+    - ✅ Maintenance items grouped correctly by status (Overdue, DueSoon, OK)
+    - ✅ Each item displays all required information
+    - ✅ Color coding works correctly (red/yellow/green)
+    - ✅ Empty states shown for empty sections
+    - ✅ Loading state displayed during fetch
+    - ✅ Error notification shown on failure
+    - ✅ No cars state handled correctly
+    - ✅ Car selection triggers data refresh
+    - ✅ No console errors
+    - ✅ No TypeScript errors
+    - ✅ Responsive on mobile and desktop
+  - Edge cases handled:
+    - No cars available shows empty state
+    - Cars with no maintenance items show all three empty sections
+    - API errors display error notifications
+    - Network failures handled gracefully
+    - Car selector updates trigger fresh dashboard fetch
+    - Different interval types (km/time) display correctly
+    - Negative values show as "overdue" instead of "remaining"
+  - Tested successfully in dockerized environment (frontend + backend + database):
+    - ✅ Dashboard page accessible at http://localhost:3000/dashboard
+    - ✅ Car selector populated with 11 cars from database
+    - ✅ First car auto-selected on page load
+    - ✅ Dashboard data fetched correctly for selected car
+    - ✅ All three status groups tested:
+      - Overdue: Car 1006 shows Air Filter (-159 days overdue) in red section ✅
+      - DueSoon: Car 2002 shows Oil Change (200 km remaining) in yellow section ✅
+      - OK: Car 1 shows Annual Inspection (117 days remaining) in green section ✅
+    - ✅ Multiple items per car display correctly (Car 1006 has items in Overdue and OK sections)
+    - ✅ Maintenance item details all display correctly:
+      - Template names shown
+      - Interval info formatted (e.g., "Every 10,000 km", "Every 365 days")
+      - Last service formatted (km with thousand separators, dates as readable strings)
+      - Next due formatted correctly
+      - Until due text shows correct values with "remaining" or "overdue"
+    - ✅ Empty sections show "No items in this category" message
+    - ✅ No cars scenario tested (shows appropriate message)
+    - ✅ Car selector dropdown functional and triggers data refresh
+    - ✅ Loading spinners display during fetch operations
+    - ✅ Color coding verified (red/yellow/green backgrounds and borders)
+    - ✅ Status icons display correctly (🔴, 🟡, 🟢)
+    - ✅ Responsive layout verified (grid adjusts for screen sizes)
+    - ✅ TypeScript compilation successful (no errors)
+    - ✅ Track Change buttons render on all items (placeholders for future task)
+  - Architecture compliance:
+    - Feature-based structure maintained (dashboard feature folder)
+    - Separation of concerns (hooks for data fetching, components for presentation, API layer)
+    - Page component thin - only orchestrates composition
+    - Reusable UI components leveraged (Card, Select, Button, Container, LoadingSpinner, EmptyState)
+    - Type safety with strict TypeScript (all interfaces properly defined)
+    - Consistent styling with Tailwind CSS (color-coded sections, responsive grids)
+    - No business logic in page components (status grouping in page, but simple filtering)
+    - Follows established patterns from cars and templates features
+    - Proper async/await error handling throughout
