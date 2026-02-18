@@ -297,3 +297,75 @@ When a task is completed:
     - Type safety with strict TypeScript
     - Consistent styling with Tailwind CSS
     - No business logic in page components
+- ✅ **05 – Display Cars List** (Completed: February 18, 2026)
+  - Implemented GET /api/cars endpoint integration on Cars page
+  - Created reusable utility function:
+    - `formatNumber` in `src/utils/format-number.ts` for mileage formatting with thousand separators (e.g., "52,000 km")
+  - Created feature components following feature-based architecture:
+    - `CarCard` component in `src/features/cars/components/` displays individual car information:
+      - Car name (prominent bold heading)
+      - Current mileage (formatted with thousand separators + " km")
+      - Number of maintenance items
+      - Created date (formatted as readable string)
+      - Edit button (navigates to /cars/{id}/edit - placeholder for Task #07)
+      - View Details button (placeholder for Task #08)
+    - `CarList` component in `src/features/cars/components/` renders responsive grid layout of car cards
+  - Created `useFetchCars` custom hook in `src/features/cars/hooks/` for data fetching with loading/error states
+  - Updated CarsListPage to display full cars list with:
+    - Automatic fetch on page load
+    - Loading spinner centered during fetch
+    - Error notification with clear message on API failure
+    - Empty state message: "No cars available. Add your first car to get started."
+    - Responsive grid layout (1 column mobile, 2 columns tablet, 3 columns desktop)
+    - "Add Car" button at top (navigates to /cars/new)
+  - Cars display all required information:
+    - Car name most prominent (text-xl font-bold)
+    - Current mileage formatted correctly (e.g., "50,000 km")
+    - Maintenance items count
+    - Created date formatted as readable string (e.g., "Feb 18, 2026")
+  - Features implemented:
+    - Loading state displayed during fetch (centered LoadingSpinner)
+    - Error notification shown on failure (red alert box)
+    - Empty state when no cars exist (EmptyState component)
+    - Cars sorted by backend (newest first - CreatedAt descending)
+    - Edit and View Details buttons on each card
+    - Responsive card layout with proper spacing
+    - Visual hierarchy with car name most prominent
+  - All acceptance criteria met:
+    - ✅ Page loads and fetches cars automatically
+    - ✅ Cars render correctly with all required fields
+    - ✅ Empty state shown when no cars exist
+    - ✅ Add Car button navigates to /cars/new
+    - ✅ Edit button navigates to /cars/{id}/edit
+    - ✅ Loading state displayed during fetch
+    - ✅ Error notification shown on failure
+    - ✅ Sorting matches backend (newest first)
+    - ✅ Mileage formatted correctly with thousand separators
+    - ✅ No console errors
+    - ✅ No TypeScript errors
+    - ✅ Responsive on mobile and desktop
+  - Edge cases handled:
+    - Cars with no maintenance items display "0" count
+    - Network failures show error message
+    - Empty array response shows empty state
+    - Backend errors (500) display error notification
+  - Tested successfully in dockerized environment (frontend + backend + database):
+    - ✅ Multiple cars displayed correctly in grid layout
+    - ✅ All car fields render properly (name, mileage, maintenance count, date)
+    - ✅ Mileage formatted with thousand separators (e.g., "50,000 km", "365,000 km")
+    - ✅ Maintenance items count accurate for cars with/without items
+    - ✅ Dates formatted correctly (e.g., "Feb 18, 2026")
+    - ✅ Loading spinner shows during fetch
+    - ✅ Empty state tested (displays correct message when no cars)
+    - ✅ Edit button navigation works (routes to /cars/{id}/edit)
+    - ✅ Add Car button works (routes to /cars/new)
+    - ✅ Responsive layout verified (grid adjusts for different screen sizes)
+    - ✅ Sorting verified (newest cars appear first)
+  - Architecture compliance:
+    - Feature-based structure maintained (cars feature folder)
+    - Separation of concerns (useFetchCars hook, CarList/CarCard components, API layer)
+    - Reusable utility functions in proper location (utils folder)
+    - Type safety with strict TypeScript (no errors)
+    - Consistent styling with Tailwind CSS
+    - No business logic in page components (logic in hooks)
+    - Follows same patterns as templates feature
